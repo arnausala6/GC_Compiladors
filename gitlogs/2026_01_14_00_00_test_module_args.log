@@ -1,0 +1,10 @@
+See log of execution in file ./logs/2026_01_14_00_00_test_module_args.log
+Starting tests for Module args...
+Testing of module arguments not implemented. Not done. Here put all tests of process_arguments
+Arguments received (4):
+Argument 0: D:\a\GC_Compiladors\GC_Compiladors\build\tests\test_module_args.exe
+Argument 1: testym333larg1
+Argument 2: testyml333arg2
+Argument 3: testyml333arg3
+Finished tests for Module args...
+
