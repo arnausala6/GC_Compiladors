@@ -13,7 +13,6 @@
  * or should be a new separate module.
  * -----------------------------------------------------------------------------
  */
-
 #include "../tests/test_modules.h"
 #include "../src/module_2/module_2.h"
 
