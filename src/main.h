@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include "./utils_files.h"
 #include "./module_args/module_args.h"
-#include "./module_2/module_2.h"
 #include "./module_preprocessor/preprocessor.h"
 
 // Output file of project run: either a stdout or a filename with log extension (comment one out)
