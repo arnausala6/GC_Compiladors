@@ -31,7 +31,39 @@ void print_arguments(int argc, char *argv[]) {
 
 int process_arguments(int argc, char *argv[]) {
     print_arguments(argc, argv);
-    fprintf(ofile, "Module arguments: not implemented yet\n");
+    int mode = 0; // modo por defecto (-c mode)
+    for(int i = 2; i < argc; i++) {
+        if(strcmp(argv[i], "-c") == 0) {
+            mode = 0;
+            if(strcmp(argv[i-1], "-d") == 0){
+                mode = 2; // si -d viene antes de -c, activar modo -all
+                return mode;
+            }
+        }
+
+        else if(strcmp(argv[i], "-d") == 0) {
+            mode = 1;
+            if(strcmp(argv[i-1], "-c") == 0){
+                mode = 2; // si -c viene antes de -d, activar modo -all
+                return mode;
+            }
+        }
+
+        else if(strcmp(argv[i], "-all") == 0) {
+            mode = 2;
+            return mode;
+        }
+
+        else if(strcmp(argv[i], "-help") == 0) {
+            mode = 3;
+            return mode;
+        }
+
+        else {
+            fprintf(ofile, "Argument %s not recognized. Exiting.\n", argv[i]);
+            return -1;
+        }
+    }
     fflush(ofile);
-    return 0;
+    return mode;
 }
