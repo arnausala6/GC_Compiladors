@@ -6,3 +6,7 @@ int a;
 int b;
 #endif
 #noesidrectiva
+#include <stdlib.h>
+#ifndef Y
+int c;
+#endif

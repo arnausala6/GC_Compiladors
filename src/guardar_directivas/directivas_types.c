@@ -30,19 +30,11 @@ void directiva_free(Directiva *d) {
       free(d->as.def.name);
       free(d->as.def.value);
       break;
-    case DIR_UNDEF:
-      free(d->as.undefn.name);
-      break;
     case DIR_INCLUDE:
       free(d->as.inc.path);
       break;
     case DIR_IFDEF:
-    case DIR_IFNDEF:
       free(d->as.ifdef.name);
-      break;
-    case DIR_IF:
-    case DIR_ELIF:
-      free(d->as.ifexpr.expr);
       break;
     case DIR_UNKNOWN:
     default:
@@ -50,7 +42,7 @@ void directiva_free(Directiva *d) {
       break;
   }
 
-  // limpia punteros por higiene
+  // limpia punteros
   d->kind = DIR_UNKNOWN;
   d->as.unknown.raw = NULL;
 }

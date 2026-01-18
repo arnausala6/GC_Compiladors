@@ -6,13 +6,8 @@ FILE *ofile = NULL;
 static const char *dirkind_to_str(DirKind k) {
   switch (k) {
     case DIR_DEFINE:   return "DIR_DEFINE";
-    case DIR_UNDEF:    return "DIR_UNDEF";
     case DIR_INCLUDE:  return "DIR_INCLUDE";
     case DIR_IFDEF:    return "DIR_IFDEF";
-    case DIR_IFNDEF:   return "DIR_IFNDEF";
-    case DIR_IF:       return "DIR_IF";
-    case DIR_ELIF:     return "DIR_ELIF";
-    case DIR_ELSE:     return "DIR_ELSE";
     case DIR_ENDIF:    return "DIR_ENDIF";
     case DIR_UNKNOWN:  return "DIR_UNKNOWN";
     default:           return "DIR_???";
@@ -29,15 +24,11 @@ int main(int argc, char *argv[]) {
 
   const char *path = argv[1];
 
-  GDConfig cfg = {
-    .max_directives = 10000,
-    .max_token_len  = 256
-  };
 
   GDError err;
   DirectivaList list;
 
-  int rc = guardar_directivas_parse_file(path, &list, &cfg, &err);
+  int rc = guardar_directivas_parse_file(path, &list, &err);
   if (rc != 0) {
     fprintf(stderr, "Error at %s:%d:%d -> %s\n",
             err.loc.file ? err.loc.file : "<unknown>",
@@ -47,7 +38,6 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  printf("Parsed directives from '%s'\n", path);
   printf("Total directives: %d\n\n", list.size);
 
   for (int i = 0; i < list.size; i++) {
@@ -59,7 +49,6 @@ int main(int argc, char *argv[]) {
            d->loc.line,
            d->loc.col);
 
-    // Payload básico (solo para debug)
     switch (d->kind) {
       case DIR_DEFINE:
         printf("  name : %s\n", d->as.def.name);
@@ -67,17 +56,9 @@ int main(int argc, char *argv[]) {
         break;
       case DIR_INCLUDE:
         printf("  path : %s\n", d->as.inc.path);
-        printf("  style: %s\n",
-               d->as.inc.style == INC_QUOTED ? "quoted" :
-               d->as.inc.style == INC_ANGLED ? "angled" : "unknown");
         break;
       case DIR_IFDEF:
-      case DIR_IFNDEF:
         printf("  name : %s\n", d->as.ifdef.name);
-        break;
-      case DIR_IF:
-      case DIR_ELIF:
-        printf("  expr : %s\n", d->as.ifexpr.expr);
         break;
       case DIR_UNKNOWN:
         printf("  raw  : %s\n", d->as.unknown.raw);
@@ -92,3 +73,4 @@ int main(int argc, char *argv[]) {
   directivalist_free(&list);
   return 0;
 }
+//ir a guardar_directiva, comandos rm -rf build y mkdir build, y cd build, cmake .., cmake --build ., ./test_guardar_directivas ../test.c
