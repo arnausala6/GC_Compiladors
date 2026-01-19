@@ -6,7 +6,7 @@ Para ejecutar, abrimos una terminal desde la raiz del proyecto (.../GC_Compilado
 gcc -Wall -Wextra -std=c11 src\module_preprocessor\preprocessor.c src\delete_comments\delete_comments.c tests\test_delete_comments.c -o test_delete_coments.exe
 
 2. Ejecutamos el archivo .exe creado
-.\test_delete_coments.exe
+.\test_delete_comments.exe
 
 el archivo _pp estará en la carpeta tests del modulo delete_comments
 */
