@@ -16,121 +16,89 @@ Funcionalidad:
         de test o integrarlo en el preprocesador general.
 ---------------------------------------------------------------------------
  */
-
 #include "delete_comments.h"
 
-/* Función interna para escribir un carácter si no es EOF */
-static void dc_putc(int c, FILE *out)
-{
-    if (c != EOF) {
-        fputc(c, out);
-    }
+static void escribir_si_valido(int c, FILE *out) {
+    if (c != EOF) fputc(c, out);
 }
 
-void dc_init_context(dc_context_t *ctx)
-{
-    if (!ctx) return;
-    ctx->state = DC_STATE_NORMAL;
-    ctx->has_emitted_space_for_comment = 0;
-}
-
-/*
-Lógica principal:
-    - Recorre el fichero de entrada carácter a carácter.
-    - Aplica la máquina de estados para reconocer comentarios.
-    - Escribe en out el texto limpio de comentarios.
-*/
-int dc_process_file(FILE *in, FILE *out)
-{
+static void consumir_comentario_linea(FILE *in, FILE *out, int *linea_actual) {
     int c;
-    dc_context_t ctx;
-
-    if (!in || !out) {
-        return 1; // Error simple; se puede refinar más adelante
+    while ((c = fgetc(in)) != EOF) {
+        if (c == '\n') {
+            escribir_si_valido('\n', out);
+            if (linea_actual) (*linea_actual)++;
+            return;
+        }
     }
+}
 
-    dc_init_context(&ctx);
+static void consumir_comentario_bloque(FILE *in, FILE *out, int *linea_actual) {
+    int c;
+    int visto_asterisco = 0;
 
     while ((c = fgetc(in)) != EOF) {
+        if (c == '\n') {
+            escribir_si_valido('\n', out);
+            if (linea_actual) (*linea_actual)++;
+            visto_asterisco = 0;
+            continue;
+        }
 
-        switch (ctx.state) {
-        case DC_STATE_NORMAL:
-            if (c == '/') {
-                // Podría empezar comentario, esperamos al siguiente char
-                ctx.state = DC_STATE_SLASH;
+        if (visto_asterisco && c == '/') {
+            return; // fin del bloque
+        }
+
+        visto_asterisco = (c == '*');
+    }
+}
+
+dc_result_t manejar_comentario(FILE *in, FILE *out, int *linea_actual) {
+    int tipo;
+
+    if (!in || !out) return DC_ERROR_PARAM;
+
+    // Sustituimos TODO comentario por un espacio
+    escribir_si_valido(' ', out);
+
+    // Leemos el segundo carácter: '/' o '*'
+    tipo = fgetc(in);
+    if (tipo == EOF) return DC_OK;
+
+    if (tipo == '/') {
+        consumir_comentario_linea(in, out, linea_actual);
+    } else if (tipo == '*') {
+        consumir_comentario_bloque(in, out, linea_actual);
+    } else {
+        // Caso raro: el motor se equivocó. Devolvemos lo consumido como texto "seguro".
+        // (Aquí no reinsertamos el '/', porque el motor ya lo consumió; por contrato no debería ocurrir)
+        escribir_si_valido(tipo, out);
+    }
+
+    return DC_OK;
+}
+
+dc_result_t procesar_fichero_sin_comentarios(FILE *in, FILE *out, int *linea_actual) {
+    int c, siguiente;
+
+    if (!in || !out) return DC_ERROR_PARAM;
+    if (linea_actual && *linea_actual <= 0) *linea_actual = 1;
+
+    while ((c = fgetc(in)) != EOF) {
+        if (c == '/') {
+            siguiente = fgetc(in);
+            if (siguiente == '/' || siguiente == '*') {
+                ungetc(siguiente, in);      // dejamos el tipo
+                manejar_comentario(in, out, linea_actual);
             } else {
-                dc_putc(c, out);
+                escribir_si_valido('/', out);
+                if (siguiente != EOF) ungetc(siguiente, in);
             }
-            break;
-
-        case DC_STATE_SLASH:
-            if (c == '/') {
-                // Inicio de comentario de línea "//"
-                if (!ctx.has_emitted_space_for_comment) {
-                    dc_putc(' ', out);
-                    ctx.has_emitted_space_for_comment = 1;
-                }
-                ctx.state = DC_STATE_LINE_COMMENT;
-            } else if (c == '*') {
-                // Inicio de comentario de bloque "/*"
-                if (!ctx.has_emitted_space_for_comment) {
-                    dc_putc(' ', out);
-                    ctx.has_emitted_space_for_comment = 1;
-                }
-                ctx.state = DC_STATE_BLOCK_COMMENT;
-            } else {
-                // No era comentario, el '/' era código normal
-                dc_putc('/', out);
-                dc_putc(c, out);
-                ctx.state = DC_STATE_NORMAL;
-            }
-            break;
-
-        case DC_STATE_LINE_COMMENT:
-            if (c == '\n') {
-                // Fin de comentario de línea: mantenemos el salto de línea
-                dc_putc('\n', out);
-                ctx.state = DC_STATE_NORMAL;
-                ctx.has_emitted_space_for_comment = 0;
-            }
-            // Si no es '\n', simplemente lo ignoramos
-            break;
-
-        case DC_STATE_BLOCK_COMMENT:
-            if (c == '*') {
-                ctx.state = DC_STATE_BLOCK_COMMENT_STAR;
-            }
-            // Cualquier otro carácter dentro del bloque se ignora
-            break;
-
-        case DC_STATE_BLOCK_COMMENT_STAR:
-            if (c == '/') {
-                // Cerramos el bloque "*/"
-                ctx.state = DC_STATE_NORMAL;
-                ctx.has_emitted_space_for_comment = 0;
-            } else if (c == '*') {
-                // Seguimos en posible cierre
-                ctx.state = DC_STATE_BLOCK_COMMENT_STAR;
-            } else {
-                // Seguimos dentro del comentario de bloque
-                ctx.state = DC_STATE_BLOCK_COMMENT;
-            }
-            break;
-
-        default:
-            // Estado inesperado: reiniciamos a algo seguro
-            ctx.state = DC_STATE_NORMAL;
-            break;
+        } else {
+            escribir_si_valido(c, out);
+            if (c == '\n' && linea_actual) (*linea_actual)++;
         }
     }
 
-    // Si el fichero termina mientras estamos en: - DC_STATE_SLASH: significa que vimos un '/' 
-    // al final sin nada después. En ese caso, lo emitimos como código normal.
-
-    if (ctx.state == DC_STATE_SLASH) {
-        dc_putc('/', out);
-    }
-
-    // No distinguimos de momento errores de sintaxis (bloque sin cerrar, etc.)
-    return 0;
+    return DC_OK;
 }

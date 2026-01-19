@@ -1,4 +1,5 @@
 #include "preprocessor.h"
+#include "./../delete_comments/delete_comments.h"
 
 /**
  * MOTOR PRINCIPAL DEL PREPROCESADOR
@@ -24,7 +25,7 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                 
                 // Si el primer carácter no blanco es '#', procesamos directiva [cite: 8, 9]
                 if (c == '#') {
-                    printf("Directiva??");
+                    printf("Directiva??\n");
                     // prueba_manejar_directivas(in, out, &linea_actual);
                     // Tras la directiva, asumimos que volvemos a esperar una nueva línea
                     estado = ESTADO_LINEA_NUEVA;
@@ -47,8 +48,8 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                     siguiente = fgetc(in);
                     if (siguiente == '/' || siguiente == '*') {
                         ungetc(siguiente, in); // Devolvemos para que la función vea el tipo
-                        printf("Comentario");
-                        //manejar_comentarios(in, out, &linea_actual);
+                        printf("Comentario\n");
+                        manejar_comentario(in, out, &linea_actual);
                     } else {
                         fputc(c, out);
                         if (siguiente != EOF) ungetc(siguiente, in);
@@ -57,7 +58,7 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                 
                 // Detección de posibles Macros (empieza por letra o _) [cite: 141]
                 else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
-                    printf("Macro??");
+                    printf("Macro??\n");
                     //manejar_macros(in, out, (char)c);
                 }
                 

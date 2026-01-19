@@ -1,10 +1,5 @@
-// comentario de una línea
-
-int a = 1; // comentario al final
+int a = 1; // comentario 1
 int b = 2;
-
-/* comentario
-   de varias
-   líneas */
-
-int c = a + b; /* comentario corto */
+/* bloque
+   multi linea */
+char c = 'example'; /* inline */
