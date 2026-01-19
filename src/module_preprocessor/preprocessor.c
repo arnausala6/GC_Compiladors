@@ -39,7 +39,7 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
             case ESTADO_NORMAL:
                 // Detección de Strings o Caracteres Literales
                 if (c == '"' || c == '\'') {
-                    printf("String o Char Literal??");
+                    printf("String o Char Literal??\n");
                     //manejar_string(in, out, c, &linea_actual);
                 }
                 
