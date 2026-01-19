@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdelete_comments.a CMakeFiles/delete_comments.dir/delete_comments.o
+/usr/bin/ranlib libdelete_comments.a
