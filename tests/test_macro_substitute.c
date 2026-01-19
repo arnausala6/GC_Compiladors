@@ -1,31 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "../src/module_macrostoring/macrostoring.h"
 #include "../src/macro_substitute/macro_substitute.h"
 
 int main(void) {
 
-    /* 1. Inicializar tabla de macros */
+    /* ---------- Crear tabla de macros ---------- */
     Tabla_macros tabla;
     tabla.elementos = 0;
     tabla.macros = NULL;
 
-    /* 2. Definir macros (sin parámetros, P1) */
+    /* ---------- Guardar macros (P1: sin parámetros) ---------- */
     guardar_macro(&tabla, "A", 0, NULL, "B");
     guardar_macro(&tabla, "B", 0, NULL, "10");
 
-    /* 3. Línea de entrada */
-    char line[1024] = "int x = A + 1;";
+    /* ---------- Abrir ficheros ---------- */
+    FILE *input = fopen("input_test.c", "r");
+    if (!input) {
+        perror("Error opening input file");
+        return 1;
+    }
 
-    printf("Before: %s\n", line);
+    FILE *output = fopen("output_test.c", "w");
+    if (!output) {
+        perror("Error opening output file");
+        fclose(input);
+        return 1;
+    }
 
-    /* 4. Sustituir macros */
-    substitute_macros(line, &tabla);
+    /* ---------- Ejecutar sustitución de macros ---------- */
+    macro_substitute(input, output, &tabla);
 
-    /* 5. Resultado */
-    printf("After : %s\n", line);
+    /* ---------- Cerrar ficheros ---------- */
+    fclose(input);
+    fclose(output);
+
+    printf("Macro substitution test finished.\n");
+    printf("Check output_test.c for results.\n");
 
     return 0;
 }

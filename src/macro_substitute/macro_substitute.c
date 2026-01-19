@@ -4,83 +4,57 @@
 
 #include "macro_substitute.h"
 
-#define MAX_LINE_LEN 1024
-#define MAX_IDENT_LEN 128
-#define MAX_ITERATIONS 10
+#define MAX_BUFFER 256
 
-/* ---------- Helper functions ---------- */
-
-static int is_ident_start(char c) {
-    return isalpha(c) || c == '_';
-}
-
-static int is_ident_char(char c) {
-    return isalnum(c) || c == '_';
-}
-
-/* Search macro by name in the macro table */
-static Macro *find_macro(Tabla_macros *tabla, const char *name) {
-    if (!tabla) return NULL;
-
+/* Busca una macro por nombre */
+static Macro *buscar_macro(Tabla_macros *tabla, const char *nombre) {
     for (int i = 0; i < tabla->elementos; i++) {
-        if (strcmp(tabla->macros[i]->nombre, name) == 0) {
+        if (strcmp(tabla->macros[i]->nombre, nombre) == 0) {
             return tabla->macros[i];
         }
     }
     return NULL;
 }
 
-/* ---------- Main substitution function ---------- */
+void macro_substitute(FILE *input, FILE *output, Tabla_macros *tabla_macros) {
+    char buffer[MAX_BUFFER];
+    int buffer_len = 0;
+    int c;
 
-void substitute_macros(char *line, Tabla_macros *tabla_macros) {
-    char buffer[MAX_LINE_LEN];
-    int iteration = 0;
-    int changed;
+    while ((c = fgetc(input)) != EOF) {
 
-    if (!line || !tabla_macros) return;
+        /* Inicio posible de identificador */
+        if (isalpha(c) || c == '_') {
+            buffer_len = 0;
+            buffer[buffer_len++] = (char)c;
 
-    do {
-        int i = 0, j = 0;
-        changed = 0;
-
-        while (line[i] != '\0' && j < MAX_LINE_LEN - 1) {
-
-            /* Detect identifier */
-            if (is_ident_start(line[i])) {
-                char ident[MAX_IDENT_LEN];
-                int k = 0;
-                int start = i;
-
-                while (is_ident_char(line[i]) && k < MAX_IDENT_LEN - 1) {
-                    ident[k++] = line[i++];
+            /* Leer el resto del identificador */
+            while ((c = fgetc(input)) != EOF && (isalnum(c) || c == '_')) {
+                if (buffer_len < MAX_BUFFER - 1) {
+                    buffer[buffer_len++] = (char)c;
                 }
-                ident[k] = '\0';
-
-                Macro *m = find_macro(tabla_macros, ident);
-
-                /* Substitute only macros without parameters (P1) */
-                if (m && m->num_parametros == 0 && m->cuerpo) {
-                    int v = 0;
-                    while (m->cuerpo[v] && j < MAX_LINE_LEN - 1) {
-                        buffer[j++] = m->cuerpo[v++];
-                    }
-                    changed = 1;
-                    continue;
-                }
-
-                /* Not a macro: copy original identifier */
-                for (int x = start; x < i && j < MAX_LINE_LEN - 1; x++) {
-                    buffer[j++] = line[x];
-                }
-            } else {
-                buffer[j++] = line[i++];
             }
+            buffer[buffer_len] = '\0';
+
+            /* Comprobar si es una macro */
+            Macro *m = buscar_macro(tabla_macros, buffer);
+
+            if (m && m->num_parametros == 0) {
+                /* Sustituir macro */
+                fputs(m->cuerpo, output);
+            } else {
+                /* No es macro: escribir tal cual */
+                fputs(buffer, output);
+            }
+
+            /* El último carácter leído no pertenece al identificador */
+            if (c != EOF) {
+                fputc(c, output);
+            }
+        } 
+        else {
+            /* No es inicio de identificador */
+            fputc(c, output);
         }
-
-        buffer[j] = '\0';
-        strcpy(line, buffer);
-
-        iteration++;
-
-    } while (changed && iteration < MAX_ITERATIONS);
+    }
 }
