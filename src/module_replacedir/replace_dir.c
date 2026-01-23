@@ -9,7 +9,7 @@ static int set_err(GDError *err, SrcLoc loc, const char *msg) {
   err->loc = loc;
   strncpy(err->msg, msg, sizeof(err->msg) - 1);
   err->msg[sizeof(err->msg) - 1] = '\0';
-  return 0;
+  return 1;
 }
 
 /*IfStack*/
@@ -43,12 +43,35 @@ int ifs_pop(IfStack *st) {
   return 0;
 }
 
+static int build_include_path(char *dst, size_t dst_sz, //Comprobar si puedo usar estas funciones de strings
+                              const char *current_file,
+                              const char *inc_path) {
+  if (!inc_path || !inc_path[0]) return 1;
+
+  if (!current_file) {
+    return (snprintf(dst, dst_sz, "%s", inc_path) >= (int)dst_sz) ? 1 : 0;
+  }
+
+  const char *slash = strrchr(current_file, '/');
+  if (!slash) {
+    return (snprintf(dst, dst_sz, "%s", inc_path) >= (int)dst_sz) ? 1 : 0;
+  }
+
+  size_t dirlen = (size_t)(slash - current_file + 1); // incluye '/'
+  if (dirlen + strlen(inc_path) + 1 > dst_sz) return 1;
+
+  memcpy(dst, current_file, dirlen);
+  strcpy(dst + dirlen, inc_path);
+  return 0;
+}
+
+
 /* Función principal */
 
 int replace_directives_handle_hash(
-  FILE *in, FILE *out, int *lineactual, Tabla_macros *macros, GDError *err, IfStack *ifstack
+  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file, 
 ) {
-  if (!d || !out || !macros || !err || !ifstack) {
+  if (!in || !out || !lineactual || !macros || !err || !ifstack) {
     return 1;
   }
 
@@ -59,32 +82,31 @@ int replace_directives_handle_hash(
 
   Directiva d;
   memset(&d, 0, sizeof(d));
-  if (guardar_directiva_parse_line(restline, &d, err) != 0) {
+  SrcLoc loc = {0};
+  loc.file = current_file;   
+  loc.line = *lineactual;
+  loc.col  = 1;
+  if (guardar_directiva_parse_line(restline, loc, &d, err) != 0) {
     // err ya seteado
     return 1;
   }
 
-  (*lineactual)++;
+  (*lineactual)++; // avanzamos línea
   switch (d.kind) {
     case DIR_DEFINE:
       if (!ifs_is_active(ifstack)) break;
 
       if (!d.as.def.name || d.as.def.name[0] == '\0')
+        directiva_free(&d);
         return set_err(err, d.loc, "define without name");
 
       const char *val = d.as.def.value ? d.as.def.value : "";
 
-      if (guardar_macro(macros, d.as.def.name, val) != 0)
+      if (guardar_macro(macros, d.as.def.name, val) != 0) // almacenar macro pedirle al modulo macro que me hagan una función asi
+        directiva_free(&d);
         return set_err(err, d.loc, "failed to store macro");
 
       break;
-
-    case DIR_UNDEF:
-      if (ifs_is_active(ifstack)) {
-        //tabla_macros_remove(macros, d->as.undefn.name);
-      }
-      break;
-
     case DIR_IFDEF: {
       if (!d.as.ifdef.name || d.as.ifdef.name[0] == '\0'){
         directiva_free(&d);
@@ -108,28 +130,6 @@ int replace_directives_handle_hash(
       break;
     }
 
-    case DIR_IFNDEF: {
-      if (!d.as.ifdef.name || d.as.ifdef.name[0] == '\0') {
-        directiva_free(&d);
-        return set_err(err, d.loc, "ifndef without name");
-      }
-
-      if (!ifs_is_active(ifstack)) {
-        if (ifs_push(ifstack, 0) != 0) {
-          directiva_free(&d);
-          return set_err(err, d.loc, "ifndef nesting too deep");
-        }
-        break;
-      }
-
-      int is_defined = tabla_macros_exists(macros, d.as.ifdef.name);
-      if (ifs_push(ifstack, !is_defined) != 0) {
-        directiva_free(&d);
-        return set_err(err, d.loc, "ifndef nesting too deep");
-      }
-      break;
-    }
-
     case DIR_ENDIF:
       if (ifs_pop(ifstack) != 0) {
         directiva_free(&d);
@@ -137,12 +137,39 @@ int replace_directives_handle_hash(
       }
       break;
     
-    case DIR_INCLUDE:
-      // Manejo de includes falta por implementar
+    case DIR_INCLUDE:{
+      if (!ifs_is_active(ifstack)) break;
+      int rc;
+      if (!d.as.inc.path || d.as.inc.path[0] == '\0') {
+        rc = set_err(err, d.loc, "include without path");
+        directiva_free(&d);
+        return rc;
+      }
+      char fullpath[1024];
+      if (build_include_path(fullpath, sizeof(fullpath), current_file, d.as.inc.path) != 0) {
+        rc = set_err(err, d.loc, "include path too long / invalid");
+        directiva_free(&d);
+        return rc;
+      } 
+      FILE *incfile = fopen(fullpath, "r");
+      if (!incfile) {
+        rc = set_err(err, d.loc, "failed to open include file");
+        directiva_free(&d);
+        return rc;
+      }
+      int incl_lineactual = 1;
+      rc = motor_preprocesador(incfile, out, flags, fullpath, macros, ifstack, err);
+      fclose(incfile);
+      if (rc != 0) {
+        directiva_free(&d);
+        return rc;
+      }
+    }
       break;
 
     default:
-      // Otras directivas no manejadas aquí
+      // Otras directivas no manejadas aquí, poner tal cual
+      fprintf(out, "#%s", restline);
       break;
   }
   directiva_free(&d);
