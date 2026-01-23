@@ -13,7 +13,7 @@ typedef struct {
 } GDError;
 
 //util para otros módulos
-int guardar_directivas_parse_file(const char *path, DirectivaList *out, GDError *err);
+int guardar_directiva_parse_line(const char *line, SrcLoc loc, Directiva *out, GDError *err);
                                  
 #ifdef __cplusplus
 }

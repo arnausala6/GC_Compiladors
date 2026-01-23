@@ -7,11 +7,9 @@
 
 
 //Guarda un error con localización y mensaje
-static void gd_set_error(GDError *err, const char *file, int line, int col, const char *msg) {
+static void gd_set_error(GDError *err, SrcLoc loc, const char *msg) {
   if (!err) return;
-  err->loc.file = file;
-  err->loc.line = line;
-  err->loc.col  = col;
+  err->loc = loc;
   strncpy(err->msg, msg ? msg : "", sizeof(err->msg));
   err->msg[sizeof(err->msg) - 1] = '\0';
 }
@@ -45,157 +43,134 @@ static char *split_token(char *s) {
   return s;
 }
 
-//Lee un fichero línea a línea y guarda las directivas del preprocesador
-int guardar_directivas_parse_file(const char *path, DirectivaList *out,
-                                  GDError *err) {
-
-  if (!path || !out) {
-    gd_set_error(err, "<no-file>", 0, 0, "bad args");
+int guardar_directiva_parse_line(const char *line, SrcLoc loc, Directiva *out, GDError *err) {
+  if (!line || !out) {
+    gd_set_error(err, loc, "bad args");
     return 1;
   }
 
-  FILE *f = fopen(path, "r");
-  if (!f) {
-    gd_set_error(err, path, 0, 0, "cannot open file");
+  memset(out, 0, sizeof(*out));
+  out->loc = loc;
+  out->kind = DIR_UNKNOWN;
+
+  // copiamos a buffer editable
+  char buf[2048];
+  strncpy(buf, line, sizeof(buf) - 1);
+  buf[sizeof(buf) - 1] = '\0';
+  chomp(buf);
+
+  char *p = skip_spaces(buf);
+  if (*p != '#') {
+    gd_set_error(err, loc, "line does not start with '#'");
     return 1;
   }
 
-  directivalist_init(out);
+  p++; // salto '#'
+  p = skip_spaces(p);
+  if (*p == '\0') {
+    // línea "#" sola => no directiva (puedes tratarlo como unknown vacío o ignorarlo)
+    out->kind = DIR_UNKNOWN;
+    out->as.unknown.raw = dupstr("");
+    if (!out->as.unknown.raw) { gd_set_error(err, loc, "out of memory"); return 1; }
+    return 0;
+  }
 
-  char line[2048];
-  int line_no = 0;
+  char *kw = p;
+  p = split_token(p);
+  char *args = skip_spaces(p);
 
-  while (fgets(line, sizeof(line), f)) {
-    line_no++;
-    chomp(line);
+  if (strcmp(kw, "define") == 0) {
+    out->kind = DIR_DEFINE;
 
-    char *p = skip_spaces(line);
-    if (*p != '#') continue;
+    char *name = args;
+    char *rest = split_token(args);
+    rest = skip_spaces(rest);
 
-    int col = (int)(p - line) + 1;
+    if (!name || *name == '\0') {
+      gd_set_error(err, loc, "define without name");
+      return 1;
+    }
 
-    p++; /* salto '#' */
-    p = skip_spaces(p);
-    if (*p == '\0') continue;
+    out->as.def.name  = dupstr(name);
+    out->as.def.value = dupstr(rest ? rest : "");
 
-    /* keyword */
-    char *kw = p;
-    p = split_token(p);
-    char *args = skip_spaces(p);
+    if (!out->as.def.name || !out->as.def.value) {
+      directiva_free(out);
+      gd_set_error(err, loc, "out of memory");
+      return 1;
+    }
 
-    Directiva d;
-    memset(&d, 0, sizeof(d));
-    d.loc.file = path;
-    d.loc.line = line_no;
-    d.loc.col  = col;
-    d.kind = DIR_UNKNOWN;
+  } else if (strcmp(kw, "include") == 0) {
+    args = skip_spaces(args);
 
-    if (strcmp(kw, "define") == 0) {
-      /* #define NAME value...*/
-      d.kind = DIR_DEFINE;
+    if (*args == '"') {
+      out->kind = DIR_INCLUDE;
 
-      char *name = args;
-      char *rest = split_token(args);
-      rest = skip_spaces(rest);
+      args++;
+      char *end = strchr(args, '"');
+      if (end) *end = '\0';
 
-      d.as.def.name  = dupstr(name);
-      d.as.def.value = dupstr(rest);
-
-      if (!d.as.def.name || !d.as.def.value) {
-        directiva_free(&d);
-        directivalist_free(out);
-        fclose(f);
-        gd_set_error(err, path, line_no, col, "out of memory");
+      out->as.inc.path = dupstr(args);
+      if (!out->as.inc.path) {
+        directiva_free(out);
+        gd_set_error(err, loc, "out of memory");
         return 1;
       }
-
-    } else if (strcmp(kw, "include") == 0) {
-      // solo #include "file"
-      args = skip_spaces(args);
-
-      if (*args == '"') {
-        d.kind = DIR_INCLUDE;
-
-        args++; // salto la comilla inicial
-        char *end = strchr(args, '"');
-        if (end) *end = '\0';
-
-        d.as.inc.path = dupstr(args);
-        if (!d.as.inc.path) {
-          directiva_free(&d);
-          directivalist_free(out);
-          fclose(f);
-          gd_set_error(err, path, line_no, col, "out of memory");
-          return 1;
-        }
-
-      } else {
-        // include no soportado como <stdio.h> lo guardo como unknown
-        d.kind = DIR_UNKNOWN;
-
-        char buf[2048];
-        if (*args) snprintf(buf, sizeof(buf), "include %s", args);
-        else       snprintf(buf, sizeof(buf), "include");
-
-        d.as.unknown.raw = dupstr(buf);
-        if (!d.as.unknown.raw) {
-          directiva_free(&d);
-          directivalist_free(out);
-          fclose(f);
-          gd_set_error(err, path, line_no, col, "out of memory");
-          return 1;
-        }
-      }
-
-    } else if (strcmp(kw, "ifdef") == 0) {
-      d.kind = DIR_IFDEF;
-
-      char *name = args;
-      split_token(args); //corta el primer token
-      d.as.ifdef.name = dupstr(name);
-
-      if (!d.as.ifdef.name) {
-        directiva_free(&d);
-        directivalist_free(out);
-        fclose(f);
-        gd_set_error(err, path, line_no, col, "out of memory");
-        return 1;
-      }
-
-    } else if (strcmp(kw, "endif") == 0) {
-      d.kind = DIR_ENDIF;
-
     } else {
-      //directiva desconocida
-      d.kind = DIR_UNKNOWN;
+      // include <...> u otros -> unknown (para que el sustituidor decida “imprimir tal cual”)
+      out->kind = DIR_UNKNOWN;
 
-      if (args && *args) {
-        char buf[2048];
-        snprintf(buf, sizeof(buf), "%s %s", kw, args);
-        d.as.unknown.raw = dupstr(buf);
-      } else {
-        d.as.unknown.raw = dupstr(kw);
-      }
+      char tmp[2048];
+      if (*args) snprintf(tmp, sizeof(tmp), "include %s", args);
+      else       snprintf(tmp, sizeof(tmp), "include");
 
-      if (!d.as.unknown.raw) {
-        directiva_free(&d);
-        directivalist_free(out);
-        fclose(f);
-        gd_set_error(err, path, line_no, col, "out of memory");
+      out->as.unknown.raw = dupstr(tmp);
+      if (!out->as.unknown.raw) {
+        directiva_free(out);
+        gd_set_error(err, loc, "out of memory");
         return 1;
       }
     }
 
-    if (!directivalist_push(out, d)) {
-      directiva_free(&d);
-      directivalist_free(out);
-      fclose(f);
-      gd_set_error(err, path, line_no, col, "push failed");
+  } else if (strcmp(kw, "ifdef") == 0) {
+    out->kind = DIR_IFDEF;
+
+    char *name = args;
+    split_token(args);
+
+    if (!name || *name == '\0') {
+      gd_set_error(err, loc, "ifdef without name");
+      return 1;
+    }
+
+    out->as.ifdef.name = dupstr(name);
+    if (!out->as.ifdef.name) {
+      directiva_free(out);
+      gd_set_error(err, loc, "out of memory");
+      return 1;
+    }
+
+  } else if (strcmp(kw, "endif") == 0) {
+    out->kind = DIR_ENDIF;
+
+  } else {
+    out->kind = DIR_UNKNOWN;
+
+    if (args && *args) {
+      char tmp[2048];
+      snprintf(tmp, sizeof(tmp), "%s %s", kw, args);
+      out->as.unknown.raw = dupstr(tmp);
+    } else {
+      out->as.unknown.raw = dupstr(kw);
+    }
+
+    if (!out->as.unknown.raw) {
+      directiva_free(out);
+      gd_set_error(err, loc, "out of memory");
       return 1;
     }
   }
 
-  fclose(f);
-  gd_set_error(err, path, 0, 0, "OK");
+  gd_set_error(err, loc, "OK");
   return 0;
 }

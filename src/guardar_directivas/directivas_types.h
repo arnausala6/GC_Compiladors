@@ -52,17 +52,6 @@ typedef struct {
   } as;
 } Directiva;
 
-// Lista dinámica de directivas
-typedef struct {
-  Directiva *data;
-  int size;
-  int cap;
-} DirectivaList;
-
-//gestión de lista
-void directivalist_init(DirectivaList *l);
-int  directivalist_push(DirectivaList *l, Directiva d);
-void directivalist_free(DirectivaList *l);
 
 void directiva_free(Directiva *d);
 
