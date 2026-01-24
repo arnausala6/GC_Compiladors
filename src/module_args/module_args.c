@@ -22,11 +22,11 @@
 #include "./module_args.h"
 
 void print_arguments(int argc, char *argv[]) {
-    fprintf(ofile, "Arguments received (%d):\n", argc);
+    printf("Arguments received (%d):\n", argc);
     for (int i = 0; i < argc; i++) {
-        fprintf(ofile, "Argument %d: %s\n", i, argv[i]);
+        printf("Argument %d: %s\n", i, argv[i]);
     }
-    fflush(ofile);
+    fflush(stdout);
 }
 
 int process_arguments(int argc, char *argv[]) {
@@ -60,10 +60,18 @@ int process_arguments(int argc, char *argv[]) {
         }
 
         else {
+<<<<<<< HEAD
             fprintf(ofile, "Argument %s not recognized. Exiting.\n", argv[i]);
             return -1;
         }
     }
     fflush(ofile);
+=======
+            printf("Argument %s not recognized. Exiting.\n", argv[i]);
+            return -1;
+        }
+    }
+    fflush(stdout);
+>>>>>>> origin/macrostoring
     return mode;
 }
