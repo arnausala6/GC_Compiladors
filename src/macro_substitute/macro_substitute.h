@@ -2,12 +2,24 @@
 #define MACRO_SUBSTITUTE_H
 
 #include <stdio.h>
-#include "../module_macrostoring/macrostoring.h"
+#include "macrostoring.h"
 
-/**
- * Reads characters from input file and performs macro substitution.
- * Writes the result to the output file.
+/*
+ * Intenta sustituir un identificador usando la tabla de macros.
+ * 
+ * input:
+ *   - ident: identificador ya leído (buffer)
+ *   - tabla: tabla global de macros
+ *   - output: fichero de salida
+ *
+ * return:
+ *   - 1 si se ha hecho sustitución
+ *   - 0 si no se ha sustituido
  */
-void macro_substitute(FILE *input, FILE *output, Tabla_macros *tabla_macros);
+int sustituir_macro(
+    const char *ident,
+    const Tabla_macros *tabla,
+    FILE *output
+);
 
 #endif

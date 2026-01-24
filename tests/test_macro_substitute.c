@@ -1,43 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../src/module_macrostoring/macrostoring.h"
-#include "../src/macro_substitute/macro_substitute.h"
+#include "macrostoring.h"
+#include "macro_substitute.h"
 
 int main(void) {
-
-    /* ---------- Crear tabla de macros ---------- */
+    // 1. Crear tabla de macros vacía
     Tabla_macros tabla;
     tabla.elementos = 0;
     tabla.macros = NULL;
 
-    /* ---------- Guardar macros (P1: sin parámetros) ---------- */
-    guardar_macro(&tabla, "A", 0, NULL, "B");
-    guardar_macro(&tabla, "B", 0, NULL, "10");
+    // 2. Añadir macros
+    guardar_macro(&tabla, "PI", 0, NULL, "3.14");
+    guardar_macro(&tabla, "HELLO", 0, NULL, "HolaMundo");
 
-    /* ---------- Abrir ficheros ---------- */
-    FILE *input = fopen("input_test.c", "r");
-    if (!input) {
-        perror("Error opening input file");
-        return 1;
-    }
-
-    FILE *output = fopen("output_test.c", "w");
+    // 3. Abrir fichero de salida temporal
+    FILE *output = fopen("test_output.txt", "w");
     if (!output) {
-        perror("Error opening output file");
-        fclose(input);
+        perror("fopen");
         return 1;
     }
 
-    /* ---------- Ejecutar sustitución de macros ---------- */
-    macro_substitute(input, output, &tabla);
+    // 4. Identificadores de prueba
+    const char *tests[] = {
+        "PI",
+        "x",
+        "HELLO",
+        "y"
+    };
 
-    /* ---------- Cerrar ficheros ---------- */
-    fclose(input);
+    printf("Ejecutando test de macro_substitute...\n");
+
+    for (int i = 0; i < 4; i++) {
+        printf("Entrada: %s -> Salida: ", tests[i]);
+
+        if (!sustituir_macro(tests[i], &tabla, output)) {
+            // No es macro, se escribe tal cual
+            fputs(tests[i], output);
+            printf("%s\n", tests[i]);
+        } else {
+            printf("(sustituido)\n");
+        }
+
+        fputc('\n', output);
+    }
+
     fclose(output);
 
-    printf("Macro substitution test finished.\n");
-    printf("Check output_test.c for results.\n");
+    printf("\nTest finalizado.\n");
+    printf("Revisa el fichero 'test_output.txt'\n");
 
     return 0;
 }
