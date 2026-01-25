@@ -1,6 +1,6 @@
 #include "macrostoring.h"
 
-void guardar_macro(Tabla_macros *tabla_macros, char *nombre, int num_parametros, char **parametros, char *cuerpo){
+void guardar_macro(Tabla_macros *tabla_macros, char *nombre, char *cuerpo){
     Macro **tmp = realloc(tabla_macros->macros, (tabla_macros->elementos + 1) * sizeof(Macro *));
     if (!tmp) {
         perror("realloc failed");
