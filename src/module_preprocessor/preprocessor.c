@@ -13,6 +13,7 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
     // falta incializar la pila de IfStack que sirve para manejar los ifdef anidados
     //IfStack pila;
     //Ifs_init(*pila); del #include "replace_dir.h"
+    //Inicializar Tabla de macros
     // Bucle de lectura carácter a carácter hasta el final del archivo [cite: 7, 99]
     while ((c = fgetc(in)) != EOF) {
         
