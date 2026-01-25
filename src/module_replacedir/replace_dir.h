@@ -4,6 +4,8 @@
 #include "guardar_directivas.h"   // debe declarar guardar_directivas_parse_line(...)
 #include "macrostoring.h"         // Tabla_macros, guardar_macro(...)
 
+#define MAX_DIRECTIVE_LINE_LENGTH 2048
+#define MAX_INCLUDE_PATH_LENGTH 1024
 
 /* Stack para #ifdef/#endif (simple y suficiente para P1PP) */
 #define DS_MAX_IF_DEPTH 64

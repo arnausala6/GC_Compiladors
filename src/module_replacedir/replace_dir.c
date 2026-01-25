@@ -43,18 +43,20 @@ int ifs_pop(IfStack *st) {
   return 0;
 }
 
-static int build_include_path(char *dst, size_t dst_sz, //Comprobar si puedo usar estas funciones de strings
+static int build_include_path(char *dst, size_t dst_sz,
                               const char *current_file,
                               const char *inc_path) {
   if (!inc_path || !inc_path[0]) return 1;
 
   if (!current_file) {
-    return (snprintf(dst, dst_sz, "%s", inc_path) >= (int)dst_sz) ? 1 : 0;
+    if (snprintf(dst, dst_sz, "%s", inc_path) >= (int)dst_sz) return 1;
+    else { return 0; }
   }
 
   const char *slash = strrchr(current_file, '/');
   if (!slash) {
-    return (snprintf(dst, dst_sz, "%s", inc_path) >= (int)dst_sz) ? 1 : 0;
+    if (snprintf(dst, dst_sz, "%s", inc_path) >= (int)dst_sz) return 1;
+    else { return 0; }
   }
 
   size_t dirlen = (size_t)(slash - current_file + 1); // incluye '/'
@@ -69,15 +71,19 @@ static int build_include_path(char *dst, size_t dst_sz, //Comprobar si puedo usa
 /* Función principal */
 
 int replace_directives_handle_hash(
-  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file, 
+  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file
 ) {
   if (!in || !out || !lineactual || !macros || !err || !ifstack) {
     return 1;
   }
 
-  char restline[2048];
+  char restline[MAX_DIRECTIVE_LINE_LENGTH];
   if (fgets(restline, sizeof(restline), in) == NULL) {
-    return set_err(err, d->loc, "failed to read directive line");
+    SrcLoc loc = {0};
+    loc.file = current_file;   
+    loc.line = *lineactual;
+    loc.col  = 1;
+    return set_err(err, loc, "failed to read directive line");
   }
 
   Directiva d;
@@ -93,20 +99,22 @@ int replace_directives_handle_hash(
 
   (*lineactual)++; // avanzamos línea
   switch (d.kind) {
-    case DIR_DEFINE:
+    case DIR_DEFINE:{
       if (!ifs_is_active(ifstack)) break;
 
-      if (!d.as.def.name || d.as.def.name[0] == '\0')
+      if (!d.as.def.name || d.as.def.name[0] == '\0'){
         directiva_free(&d);
         return set_err(err, d.loc, "define without name");
+      }
 
       const char *val = d.as.def.value ? d.as.def.value : "";
 
-      if (guardar_macro(macros, d.as.def.name, val) != 0) // almacenar macro pedirle al modulo macro que me hagan una función asi
+      if (guardar_macro(macros, d.as.def.name, val) != 0){ // almacenar macro pedirle al modulo macro que me hagan una función asi
         directiva_free(&d);
         return set_err(err, d.loc, "failed to store macro");
-
+      }
       break;
+    }
     case DIR_IFDEF: {
       if (!d.as.ifdef.name || d.as.ifdef.name[0] == '\0'){
         directiva_free(&d);
@@ -130,13 +138,14 @@ int replace_directives_handle_hash(
       break;
     }
 
-    case DIR_ENDIF:
+    case DIR_ENDIF: {
       if (ifs_pop(ifstack) != 0) {
         directiva_free(&d);
         return set_err(err, d.loc, "endif without matching ifdef/ifndef");
       }
       break;
-    
+    }
+
     case DIR_INCLUDE:{
       if (!ifs_is_active(ifstack)) break;
       int rc;
@@ -145,7 +154,7 @@ int replace_directives_handle_hash(
         directiva_free(&d);
         return rc;
       }
-      char fullpath[1024];
+      char fullpath[MAX_INCLUDE_PATH_LENGTH];
       if (build_include_path(fullpath, sizeof(fullpath), current_file, d.as.inc.path) != 0) {
         rc = set_err(err, d.loc, "include path too long / invalid");
         directiva_free(&d);
