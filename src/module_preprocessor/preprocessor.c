@@ -10,7 +10,9 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
     int siguiente;
     int linea_actual = 1;
     EstadoMotor estado = ESTADO_LINEA_NUEVA;
-
+    // falta incializar la pila de IfStack que sirve para manejar los ifdef anidados
+    //IfStack pila;
+    //Ifs_init(*pila); del #include "replace_dir.h"
     // Bucle de lectura carácter a carácter hasta el final del archivo [cite: 7, 99]
     while ((c = fgetc(in)) != EOF) {
         
@@ -26,7 +28,8 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                 // Si el primer carácter no blanco es '#', procesamos directiva [cite: 8, 9]
                 if (c == '#') {
                     printf("Directiva??\n");
-                    // prueba_manejar_directivas(in, out, &linea_actual);
+                    // puedes usar el guardar_directivas para parsear la directiva y tener su tipo y luego llamas a sustituir directivas
+                    // parametros para el replace_dir necesito que pases, la tabla de macros, el ifStack, el nombre del archivo para hacer la recursividad de los include, las flags, y ya lo de la linea actual o la directiva ya depende de como quieras hacaerlo para pasarlo al modulo de sustituir directivas
                     // Tras la directiva, asumimos que volvemos a esperar una nueva línea
                     estado = ESTADO_LINEA_NUEVA;
                 } else {
