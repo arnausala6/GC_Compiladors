@@ -1,7 +1,5 @@
 typedef struct {
     char *nombre;
-    int num_parametros;
-    char **parametros;
     char *cuerpo;
 } Macro;
 
