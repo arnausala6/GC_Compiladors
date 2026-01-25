@@ -59,7 +59,7 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                 // Detección de posibles Macros (empieza por letra o _) [cite: 141]
                 else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
                     printf("Macro??\n");
-                    //manejar_macros(in, out, (char)c);
+                    //sustituir_macros(char* posible_macro, Tabla_macros, out); --> pasarle a la función una palabra para que la evalue como posible macro
                 }
                 
                 // Gestión de saltos de línea y cambio de estado
