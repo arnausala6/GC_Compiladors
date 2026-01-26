@@ -1,1 +1,0 @@
-/usr/bin/cc -rdynamic CMakeFiles/test_guardar_directivas.dir/guardar_directivas_main.o -o test_guardar_directivas  libguardar_directivas.a 
