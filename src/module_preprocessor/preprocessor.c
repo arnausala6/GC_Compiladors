@@ -60,7 +60,7 @@ int motor_preprocesador(
 
                 if (c == '#') {
                     if (flags == 1 || flags == 2) {
-                        printf("He entrado aqui\n");
+                        // printf("He entrado aqui\n");
                         int rc = replace_directives_handle_hash(
                             in, out, &linea_actual, flags,
                             macros, err, ifstack, fullpath
@@ -80,7 +80,6 @@ int motor_preprocesador(
                 break;
 
             case ESTADO_NORMAL:
-                c = fgetc(in);
                 if (c == EOF) return 0;
 
                 if (c == '"' || c == '\'') {

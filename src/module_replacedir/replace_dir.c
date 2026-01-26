@@ -97,7 +97,7 @@ int replace_directives_handle_hash(
     // err ya seteado
     return 1;
   }
-  printf("Directiva detectada en %s:%d: #%s, tipo: %d", loc.file, loc.line, restline, d.kind);
+  // printf("Directiva detectada en %s:%d: #%s, tipo: %d", loc.file, loc.line, restline, d.kind);
   (*lineactual)++; // avanzamos línea
   switch (d.kind) {
     case DIR_DEFINE:{

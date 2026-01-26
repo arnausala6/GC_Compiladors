@@ -61,7 +61,7 @@ int guardar_directiva_parse_line(const char *line, SrcLoc loc, Directiva *out, G
 
   char *p = skip_spaces(buf);
 
-  p++; // salto '#'
+  // p++; // salto '#'
   p = skip_spaces(p);
   if (*p == '\0') {
     // línea "#" sola => no directiva (puedes tratarlo como unknown vacío o ignorarlo)
