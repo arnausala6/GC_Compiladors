@@ -14,6 +14,8 @@ int main(int argc, char *argv[]) {
         fclose(ofile);
         return 1;
     }
+    printf("Archivo de entrada: %s\n", argv[1]);
+    fflush(stdout); // Fuerza a la consola a imprimir lo que tenga en memoria
     FILE *input_file = fopen(argv[1], "r");
     motor_preprocesador(input_file, ofile, mode);
     fprintf(ofile, "All modules executed successfully!\n\n");

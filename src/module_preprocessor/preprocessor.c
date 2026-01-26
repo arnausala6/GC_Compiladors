@@ -1,72 +1,89 @@
 #include "preprocessor.h"
 #include "./../delete_comments/delete_comments.h"
 
-/**
+/*
  * MOTOR PRINCIPAL DEL PREPROCESADOR
- * Analiza el archivo carácter por carácter y gestiona los estados.
+ * * Flags:
+ * 0 (-c)   : Elimina comentarios, ignora directivas. [cite: 22]
+ * 1 (-d)   : Mantiene comentarios, procesa directivas. [cite: 23]
+ * 2 (-all) : Elimina comentarios, procesa directivas. [cite: 24]
  */
 void motor_preprocesador(FILE *in, FILE *out, int flags) {
     int c;
     int siguiente;
     int linea_actual = 1;
     EstadoMotor estado = ESTADO_LINEA_NUEVA;
-    // falta incializar la pila de IfStack que sirve para manejar los ifdef anidados
-    //IfStack pila;
-    //Ifs_init(*pila); del #include "replace_dir.h"
-    //Inicializar Tabla de macros
-    // Bucle de lectura carácter a carácter hasta el final del archivo [cite: 7, 99]
+
+    // TODO: Inicializar la pila de IfStack para ifdef anidados
+    // TODO: Inicializar Tabla de macros
+
     while ((c = fgetc(in)) != EOF) {
         
         switch (estado) {
             
+            // --- ESTADO: COMIENZO DE LÍNEA ---
+            // Buscamos '#' para directivas
             case ESTADO_LINEA_NUEVA:
-                // Ignorar espacios en blanco al inicio de línea para detectar la directiva 
+                // Ignorar espacios en blanco al inicio de línea
                 if (c == ' ' || c == '\t') {
                     fputc(c, out);
                     break;
                 }
                 
-                // Si el primer carácter no blanco es '#', procesamos directiva [cite: 8, 9]
+                // Si encontramos '#', verificamos si debemos procesar directivas
                 if (c == '#') {
-                    printf("Directiva??\n");
-                    // puedes usar el guardar_directivas para parsear la directiva y tener su tipo y luego llamas a sustituir directivas
-                    // parametros para el replace_dir necesito que pases, la tabla de macros, el ifStack, el nombre del archivo para hacer la recursividad de los include, las flags, y ya lo de la linea actual o la directiva ya depende de como quieras hacaerlo para pasarlo al modulo de sustituir directivas
-                    // Tras la directiva, asumimos que volvemos a esperar una nueva línea
-                    estado = ESTADO_LINEA_NUEVA;
+                    // Solo procesamos directivas en modo -d (1) o -all (2)
+                    if (flags == 1 || flags == 2) {
+                        // AQUÍ IRÁ LA LÓGICA DE DIRECTIVAS
+                        // Por ahora, solo lo imprimimos para depurar
+                         fprintf(out, "#"); 
+                         // parsear_directiva(...);
+                    } else {
+                        // En modo -c, el '#' es texto normal
+                        fputc(c, out);
+                    }
+                    // Tras un #, volvemos a estado normal hasta el salto de línea
+                    estado = ESTADO_NORMAL;
                 } else {
-                    // Si no es '#', retrocedemos y procesamos como texto normal
+                    // No es directiva, retrocedemos y cambiamos a estado normal
                     ungetc(c, in);
                     estado = ESTADO_NORMAL;
                 }
                 break;
 
+            // --- ESTADO: TEXTO NORMAL ---
             case ESTADO_NORMAL:
-                // Detección de Strings o Caracteres Literales
+                // 1. Detección de Strings (para no borrar comentarios dentro de strings)
                 if (c == '"' || c == '\'') {
-                    printf("String o Char Literal??\n");
-                    //manejar_string(in, out, c, &linea_actual);
+                    fputc(c, out);
+                    // Aquí deberías consumir el string completo para evitar 
+                    // falsos positivos de comentarios dentro de comillas.
+                    // manejar_string(in, out, c, &linea_actual); 
                 }
                 
-                // Detección de posibles Comentarios [cite: 197]
+                // 2. Detección de Comentarios
                 else if (c == '/') {
                     siguiente = fgetc(in);
-                    if (siguiente == '/' || siguiente == '*') {
-                        ungetc(siguiente, in); // Devolvemos para que la función vea el tipo
-                        printf("Comentario\n");
+                    
+                    int es_comentario = (siguiente == '/' || siguiente == '*');
+                    
+                    // Verificamos si debemos eliminar comentarios (flags 0 o 2) [cite: 19]
+                    if (es_comentario && (flags == 0 || flags == 2)) {
+                        // Devolvemos el carácter 'siguiente' al buffer porque 
+                        // manejar_comentario espera leer el tipo ('/' o '*')
+                        ungetc(siguiente, in); 
                         manejar_comentario(in, out, &linea_actual);
-                    } else {
+                    } 
+                    else {
+                        // O no es comentario, o estamos en modo -d (conservar comentarios)
                         fputc(c, out);
-                        if (siguiente != EOF) ungetc(siguiente, in);
+                        if (siguiente != EOF) {
+                            ungetc(siguiente, in);
+                        }
                     }
                 }
                 
-                // Detección de posibles Macros (empieza por letra o _) [cite: 141]
-                else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
-                    printf("Macro??\n");
-                    //sustituir_macros(char* posible_macro, Tabla_macros, out); --> pasarle a la función una palabra para que la evalue como posible macro
-                }
-                
-                // Gestión de saltos de línea y cambio de estado
+                // 3. Gestión de saltos de línea (resetea el estado)
                 else {
                     fputc(c, out);
                     if (c == '\n') {
@@ -77,7 +94,6 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                 break;
 
             default:
-                // Por seguridad, si el estado se corrompe, volvemos al normal
                 fputc(c, out);
                 estado = ESTADO_NORMAL;
                 break;
