@@ -1,6 +1,9 @@
 #include "preprocessor.h"
 #include "../module_replacedir/replace_dir.h"
 #include "../delete_comments/delete_comments.h"
+#include "../macro_substitute/macro_substitute.h"
+
+#define MAX_IDENT 256
 
 static int manejar_strings(
     FILE *in,
@@ -44,6 +47,8 @@ int motor_preprocesador(
     int c;
     int siguiente;
     int linea_actual = 1;
+    char buffer[MAX_IDENT];
+    int buf_idx;
     EstadoMotor estado = ESTADO_LINEA_NUEVA;
 
     if (!in || !out || !fullpath || !macros || !ifstack || !err) return 1;
@@ -102,7 +107,41 @@ int motor_preprocesador(
                         break; 
                     }
                 }
+                if (
+                    (c >= 'a' && c <= 'z') ||
+                    (c >= 'A' && c <= 'Z') ||
+                    c == '_' ) 
+                    {
+                    buf_idx = 0;
+                    buffer[buf_idx++] = (char)c;
 
+                    while ((siguiente = fgetc(in)) != EOF) {
+                        if (
+                            (siguiente >= 'a' && siguiente <= 'z') ||
+                            (siguiente >= 'A' && siguiente <= 'Z') ||
+                            (siguiente >= '0' && siguiente <= '9') ||
+                            siguiente == '_'
+                        ) {
+                            if (buf_idx < MAX_IDENT - 1) {
+                                buffer[buf_idx++] = (char)siguiente;
+                            }
+                        } else {
+                            ungetc(siguiente, in);
+                            break;
+                        }
+                }
+
+                buffer[buf_idx] = '\0';
+
+                /* Delegación TOTAL al módulo de sustitución */
+                if (ifs_is_active(ifstack)) {
+                    if (!sustituir_macro(buffer, macros, out)) {
+                        fputs(buffer, out);
+                    }
+                }
+
+                break;
+            }
                 if (c == '\n') {
                     if (ifs_is_active(ifstack)) fputc(c, out);
                     linea_actual++;
