@@ -1,2 +1,0 @@
-/usr/bin/ar qc libguardar_directivas.a CMakeFiles/guardar_directivas.dir/guardar_directivas.o CMakeFiles/guardar_directivas.dir/directivas_types.o
-/usr/bin/ranlib libguardar_directivas.a
