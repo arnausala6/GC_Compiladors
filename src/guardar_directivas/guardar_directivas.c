@@ -60,10 +60,6 @@ int guardar_directiva_parse_line(const char *line, SrcLoc loc, Directiva *out, G
   chomp(buf);
 
   char *p = skip_spaces(buf);
-  if (*p != '#') {
-    gd_set_error(err, loc, "line does not start with '#'");
-    return 1;
-  }
 
   p++; // salto '#'
   p = skip_spaces(p);
