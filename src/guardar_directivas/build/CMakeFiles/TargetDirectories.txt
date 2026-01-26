@@ -1,0 +1,4 @@
+/mnt/c/Users/FA507/Documents/GitHub/GC_Compiladors/src/guardar_directivas/build/CMakeFiles/guardar_directivas.dir
+/mnt/c/Users/FA507/Documents/GitHub/GC_Compiladors/src/guardar_directivas/build/CMakeFiles/test_guardar_directivas.dir
+/mnt/c/Users/FA507/Documents/GitHub/GC_Compiladors/src/guardar_directivas/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/FA507/Documents/GitHub/GC_Compiladors/src/guardar_directivas/build/CMakeFiles/rebuild_cache.dir
