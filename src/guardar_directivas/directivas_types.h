@@ -22,11 +22,6 @@ typedef struct {
   int col;
 } SrcLoc;
 
-//el include
-typedef enum {
-  INC_QUOTED,   //"file.h"
-  INC_UNKNOWN
-} IncludeKind;
 
 typedef struct {
   DirKind kind;
