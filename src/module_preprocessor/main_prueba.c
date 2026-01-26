@@ -1,5 +1,6 @@
 #include "./main.h"
 #include "./module_preprocessor/preprocessor.h"
+#include "./module_replacedir/replace_dir.h"
 
 int main(int argc, char **argv) {
     if (argc < 2) {

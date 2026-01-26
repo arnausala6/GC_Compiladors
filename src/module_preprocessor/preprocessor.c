@@ -1,105 +1,123 @@
 #include "preprocessor.h"
 #include "./../delete_comments/delete_comments.h"
+#include "./../replace_directives/replace_dir.h"
 
-/*
- * MOTOR PRINCIPAL DEL PREPROCESADOR
- * * Flags:
- * 0 (-c)   : Elimina comentarios, ignora directivas. [cite: 22]
- * 1 (-d)   : Mantiene comentarios, procesa directivas. [cite: 23]
- * 2 (-all) : Elimina comentarios, procesa directivas. [cite: 24]
- */
-void motor_preprocesador(FILE *in, FILE *out, int flags) {
+static int manejar_strings(
+    FILE *in,
+    FILE *out,
+    int quote,
+    int *linea_actual,
+    IfStack *ifstack
+) {
+    if (!in || !out || !linea_actual || !ifstack) return 1;
+
+    if (ifs_is_active(ifstack)) fputc(quote, out);
+
+    int c;
+    while ((c = fgetc(in)) != EOF) {
+
+        if (ifs_is_active(ifstack)) fputc(c, out);
+
+        if (c == '\n') (*linea_actual)++;
+
+        if (c == '\\') {
+            int next = fgetc(in);
+            if (next == EOF) return 0;
+            if (ifs_is_active(ifstack)) fputc(next, out);
+            if (next == '\n') (*linea_actual)++;
+            continue;
+        }
+
+        if (c == quote) return 0;
+    }
+
+    return 0;
+}
+
+int motor_preprocesador(
+    FILE *in, FILE *out, int flags,
+    const char *fullpath,
+    Tabla_macros *macros,
+    IfStack *ifstack,
+    GDError *err
+) {
     int c;
     int siguiente;
     int linea_actual = 1;
     EstadoMotor estado = ESTADO_LINEA_NUEVA;
 
-    IfStack ifstack;
-    ifstack.active = 0;
-    ifstack.depth = 0;
-    Tabla_macros tabla_macros;
-    tabla_macros.elementos = 0;
-    tabla_macros.macros = NULL;
+    if (!in || !out || !fullpath || !macros || !ifstack || !err) return 1;
 
     while ((c = fgetc(in)) != EOF) {
-        
+
         switch (estado) {
-            
-            // --- ESTADO: COMIENZO DE LÍNEA ---
-            // Buscamos '#' para directivas
+
             case ESTADO_LINEA_NUEVA:
-                // Ignorar espacios en blanco al inicio de línea
                 if (c == ' ' || c == '\t') {
-                    fputc(c, out);
+                    if (ifs_is_active(ifstack)) fputc(c, out);
                     break;
                 }
-                
-                // Si encontramos '#', verificamos si debemos procesar directivas
+
                 if (c == '#') {
-                    // Solo procesamos directivas en modo -d (1) o -all (2)
                     if (flags == 1 || flags == 2) {
-                        // AQUÍ IRÁ LA LÓGICA DE DIRECTIVAS
-                        // Por ahora, solo lo imprimimos para depurar
-                        replace_directives_handle_hash(FILE in, FILE out, int *lineactual, int flags, Tabla_macros &tabla_macros, GDError *err, IfStack &ifstack, const char *current_file, PPProcessFileFn process_file_fn);
+                        int rc = replace_directives_handle_hash(
+                            in, out, &linea_actual, flags,
+                            macros, err, ifstack, fullpath
+                        );
+                        if (rc != 0) return 1;
                     } else {
-                        // En modo -c, el '#' es texto normal
-                        fputc(c, out);
+                        if (ifs_is_active(ifstack)) fputc(c, out);
                     }
-                    // Tras un #, volvemos a estado normal hasta el salto de línea
-                    estado = ESTADO_NORMAL;
-                } else {
-                    // No es directiva, retrocedemos y cambiamos a estado normal
-                    ungetc(c, in);
-                    estado = ESTADO_NORMAL;
+
+                    // IMPORTANTE: después de una directiva ya estás en nueva línea
+                    estado = ESTADO_LINEA_NUEVA;
+                    break;
                 }
+
+                ungetc(c, in);
+                estado = ESTADO_NORMAL;
                 break;
 
-            // --- ESTADO: TEXTO NORMAL ---
             case ESTADO_NORMAL:
-                // 1. Detección de Strings (para no borrar comentarios dentro de strings)
+                c = fgetc(in);
+                if (c == EOF) return 0;
+
                 if (c == '"' || c == '\'') {
-                    fputc(c, out);
-                    // Aquí deberías consumir el string completo para evitar 
-                    // falsos positivos de comentarios dentro de comillas.
-                    // manejar_string(in, out, c, &linea_actual); 
+                    // NO imprimir aquí; lo hace manejar_strings 
+                    manejar_strings(in, out, c, &linea_actual, ifstack);
+                    break;
                 }
-                
-                // 2. Detección de Comentarios
-                else if (c == '/') {
+
+                if (c == '/') {
                     siguiente = fgetc(in);
-                    
                     int es_comentario = (siguiente == '/' || siguiente == '*');
-                    
-                    // Verificamos si debemos eliminar comentarios (flags 0 o 2) [cite: 19]
+
                     if (es_comentario && (flags == 0 || flags == 2)) {
-                        // Devolvemos el carácter 'siguiente' al buffer porque 
-                        // manejar_comentario espera leer el tipo ('/' o '*')
-                        ungetc(siguiente, in); 
+                        ungetc(siguiente, in);
                         manejar_comentario(in, out, &linea_actual);
-                    } 
-                    else {
-                        // O no es comentario, o estamos en modo -d (conservar comentarios)
-                        fputc(c, out);
-                        if (siguiente != EOF) {
-                            ungetc(siguiente, in);
-                        }
+                        break;
+                    } else {
+                        if (ifs_is_active(ifstack)) fputc(c, out);
+                        if (siguiente != EOF) ungetc(siguiente, in);
+                        break; 
                     }
                 }
-                
-                // 3. Gestión de saltos de línea (resetea el estado)
-                else {
-                    fputc(c, out);
-                    if (c == '\n') {
-                        linea_actual++;
-                        estado = ESTADO_LINEA_NUEVA;
-                    }
+
+                if (c == '\n') {
+                    if (ifs_is_active(ifstack)) fputc(c, out);
+                    linea_actual++;
+                    estado = ESTADO_LINEA_NUEVA;
+                    break;
                 }
+
+                if (ifs_is_active(ifstack)) fputc(c, out);
                 break;
 
             default:
-                fputc(c, out);
                 estado = ESTADO_NORMAL;
                 break;
         }
     }
+
+    return 0;
 }

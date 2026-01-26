@@ -5,6 +5,9 @@
 #include "./utils_files.h"
 #include "./module_args/module_args.h"
 #include "./module_preprocessor/preprocessor.h"
+#include "./module_replacedir/replace_dir.h"
+#include "./macrostoring/macrostoring.h"
+#include "./guardar_directivas/guardar_directivas.h"
 
 // Output file of project run: either a stdout or a filename with log extension (comment one out)
 #define PROJOUTFILENAME "./proj_modules_template.log"

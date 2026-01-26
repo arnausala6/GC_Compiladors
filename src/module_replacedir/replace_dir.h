@@ -19,15 +19,7 @@ int  ifs_is_active(const IfStack *st);
 int  ifs_push(IfStack *st, int cond_true);
 int  ifs_pop(IfStack *st);
 
-typedef int (*PPProcessFileFn)(
-  const char *path,
-  FILE *out,
-  int *lineactual,
-  Tabla_macros *macros,
-  GDError *err,
-  IfStack *ifstack
-);
 
 int replace_directives_handle_hash(
-  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file, PPProcessFileFn process_file_fn
+  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file,
 );

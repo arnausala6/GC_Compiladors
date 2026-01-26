@@ -2,6 +2,7 @@
 #define PREPROCESSOR_H
 
 #include <stdio.h>
+#include "main.h"
 
 typedef enum {
     ESTADO_NORMAL,       // Texto estándar de C
@@ -13,6 +14,6 @@ typedef enum {
 } EstadoMotor;
 
 // Motor Principal
-void motor_preprocesador(FILE *in, FILE *out, int flags);
+int motor_preprocesador(FILE *in, FILE *out, int flags, const char *fullpath, Tabla_macros *macros, IfStack *ifstack, GDError *err);
 
 #endif
