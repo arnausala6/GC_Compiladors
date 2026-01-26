@@ -14,8 +14,12 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
     int linea_actual = 1;
     EstadoMotor estado = ESTADO_LINEA_NUEVA;
 
-    // TODO: Inicializar la pila de IfStack para ifdef anidados
-    // TODO: Inicializar Tabla de macros
+    IfStack ifstack;
+    ifstack.active = 0;
+    ifstack.depth = 0;
+    Tabla_macros tabla_macros;
+    tabla_macros.elementos = 0;
+    tabla_macros.macros = NULL;
 
     while ((c = fgetc(in)) != EOF) {
         
@@ -36,8 +40,7 @@ void motor_preprocesador(FILE *in, FILE *out, int flags) {
                     if (flags == 1 || flags == 2) {
                         // AQUÍ IRÁ LA LÓGICA DE DIRECTIVAS
                         // Por ahora, solo lo imprimimos para depurar
-                         fprintf(out, "#"); 
-                         // parsear_directiva(...);
+                        replace_directives_handle_hash(FILE in, FILE out, int *lineactual, int flags, Tabla_macros &tabla_macros, GDError *err, IfStack &ifstack, const char *current_file, PPProcessFileFn process_file_fn);
                     } else {
                         // En modo -c, el '#' es texto normal
                         fputc(c, out);
