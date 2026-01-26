@@ -9,7 +9,7 @@ add_library(module_preprocessor preprocessor.c)
 # Permite que otros módulos encuentren los headers de esta carpeta
 # Usamos PUBLIC para que el main sepa dónde está "preprocessor.h"
 target_include_directories(module_preprocessor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(module_preprocessor PRIVATE delete_comments)
+target_link_libraries(module_preprocessor PRIVATE replace_directives delete_comments)
 
 # Si el preprocesador usa funciones de utilidades (como strings manuales), enlaza utils [cite: 273]
 # target_link_libraries(module_preprocessor PRIVATE utils)
