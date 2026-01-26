@@ -109,10 +109,7 @@ int replace_directives_handle_hash(
 
       const char *val = d.as.def.value ? d.as.def.value : "";
 
-      if (guardar_macro(macros, d.as.def.name, val) != 0){ // almacenar macro pedirle al modulo macro que me hagan una función asi
-        directiva_free(&d);
-        return set_err(err, d.loc, "failed to store macro");
-      }
+      guardar_macro(*macros, d.as.def.name, val);
       break;
     }
     case DIR_IFDEF: {
