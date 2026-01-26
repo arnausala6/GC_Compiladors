@@ -8,4 +8,4 @@ typedef struct {
     Macro **macros;
 }Tabla_macros;
 
-void guardar_macro(Macro tabla_macros, char *nombre, int num_parametros, char **parametros, char *cuerpo);
+void guardar_macro(Macro tabla_macros, char *nombre, char *cuerpo);
