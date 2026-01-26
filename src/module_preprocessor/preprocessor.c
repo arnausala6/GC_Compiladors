@@ -1,4 +1,6 @@
 #include "preprocessor.h"
+#include "../module_replacedir/replace_dir.h"
+#include "../delete_comments/delete_comments.h"
 
 static int manejar_strings(
     FILE *in,
@@ -58,6 +60,7 @@ int motor_preprocesador(
 
                 if (c == '#') {
                     if (flags == 1 || flags == 2) {
+                        printf("He entrado aqui\n");
                         int rc = replace_directives_handle_hash(
                             in, out, &linea_actual, flags,
                             macros, err, ifstack, fullpath

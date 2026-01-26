@@ -1,19 +1,12 @@
 #pragma once
 #include <stdio.h>
-#include "../guardar_directivas/directivas_types.h"
+#include "../module_preprocessor/pp_shared.h" 
 #include "../guardar_directivas/guardar_directivas.h"   // debe declarar guardar_directivas_parse_line(...)
 #include "../macrostoring/macrostoring.h"         // Tabla_macros, guardar_macro(...)
-#include "../main.h"              // GDError
 
 #define MAX_DIRECTIVE_LINE_LENGTH 2048
 #define MAX_INCLUDE_PATH_LENGTH 1024
 
-/* Stack para #ifdef/#endif (simple y suficiente para P1PP) */
-#define DS_MAX_IF_DEPTH 64
-typedef struct {
-  int active[DS_MAX_IF_DEPTH];  // 1=activo, 0=inactivo
-  int depth;                    // 0..DS_MAX_IF_DEPTH-1
-} IfStack;
 
 /* Estado del if-stack */
 int  ifs_is_active(const IfStack *st);

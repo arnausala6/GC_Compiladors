@@ -2,11 +2,8 @@
 #define PREPROCESSOR_H
 
 #include <stdio.h>
-#include "main.h"
+#include "pp_shared.h"
 #include "../macrostoring/macrostoring.h"
-#include "./../module_replacedir/replace_dir.h"   
-#include "./../delete_comments/delete_comments.h"
-#include "./../guardar_directivas/guardar_directivas.h"
 
 typedef enum {
     ESTADO_NORMAL,       // Texto estándar de C

@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+#include "../module_preprocessor/pp_shared.h"
+
+
 //Tipo de directiva detectada
 typedef enum {
   DIR_DEFINE,
@@ -15,12 +18,6 @@ typedef enum {
   DIR_UNKNOWN
 } DirKind;
 
-//localizacion para errores y debug
-typedef struct {
-  const char *file;
-  int line;
-  int col;
-} SrcLoc;
 
 
 typedef struct {

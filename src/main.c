@@ -1,5 +1,7 @@
 #include "./main.h"
-
+#include "./module_preprocessor/preprocessor.h"
+#include "./module_replacedir/replace_dir.h"
+#include "./macrostoring/macrostoring.h"
 
 FILE* ofile = NULL; // The output handler for the project run (same variable name as in modules)
 
@@ -26,7 +28,7 @@ int main(int argc, char *argv[]) {
     memset(&err, 0, sizeof(err));
     macros.elementos = 0;
     macros.macros = NULL;
-    ifsinit(&ifstack); 
+    ifs_init(&ifstack); 
     
     int rc = motor_preprocesador(input_file, ofile, mode, input_path, &macros, &ifstack, &err);
     if (rc != 0) fprintf(stderr, "ERR %s:%d:%d %s\n", input_path, 0, 0, "Error in preprocessor");

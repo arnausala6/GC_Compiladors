@@ -4,7 +4,7 @@
 # -----------------------------------------------------
 
 # Crea la librería estática a partir del motor [cite: 273]
-add_library(module_preprocessor preprocessor.c)
+add_library(module_preprocessor preprocessor.c pp_shared.h)
 
 # Permite que otros módulos encuentren los headers de esta carpeta
 # Usamos PUBLIC para que el main sepa dónde está "preprocessor.h"

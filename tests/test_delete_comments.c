@@ -22,7 +22,8 @@ int main(void) {
     if (!out) { perror("output_comments_pp.c"); fclose(in); return 1; }
 
     int flags = 0; // de momento se queda asi
-    motor_preprocesador(in, out, flags);
+
+    motor_preprocesador(in, out, flags, "src/delete_comments/tests/input_comments.c", NULL, NULL, NULL);
 
     fclose(in);
     fclose(out);

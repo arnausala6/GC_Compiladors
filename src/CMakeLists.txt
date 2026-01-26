@@ -31,7 +31,7 @@ add_subdirectory(delete_comments)
 add_subdirectory(guardar_directivas)
 add_subdirectory(macrostoring)
 add_subdirectory(module_replacedir)
-
+add_subdirectory(macro_substitute)
 add_subdirectory(module_preprocessor)
 
 message(STATUS "   - (${PROJECT_NAME}) Added modules subdirectories")

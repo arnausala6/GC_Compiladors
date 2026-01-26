@@ -1,4 +1,5 @@
 #include "replace_dir.h"
+#include "../module_preprocessor/preprocessor.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -96,7 +97,7 @@ int replace_directives_handle_hash(
     // err ya seteado
     return 1;
   }
-
+  printf("Directiva detectada en %s:%d: #%s, tipo: %d", loc.file, loc.line, restline, d.kind);
   (*lineactual)++; // avanzamos línea
   switch (d.kind) {
     case DIR_DEFINE:{

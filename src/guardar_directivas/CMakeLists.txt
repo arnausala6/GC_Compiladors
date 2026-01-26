@@ -8,5 +8,5 @@ target_include_directories(guardar_directivas PUBLIC
 )
 
 target_link_libraries(guardar_directivas
-  directivas_types
+  module_preprocessor
 )

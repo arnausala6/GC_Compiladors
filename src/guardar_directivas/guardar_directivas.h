@@ -2,15 +2,12 @@
 #define GUARDAR_DIRECTIVAS_H
 
 #include "directivas_types.h"
+#include "../module_preprocessor/pp_shared.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct {
-  SrcLoc loc;
-  char msg[256];
-} GDError;
 
 //util para otros módulos
 int guardar_directiva_parse_line(const char *line, SrcLoc loc, Directiva *out, GDError *err);
