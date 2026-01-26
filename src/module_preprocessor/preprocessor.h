@@ -3,6 +3,10 @@
 
 #include <stdio.h>
 #include "main.h"
+#include "../macrostoring/macrostoring.h"
+#include "./../module_replacedir/replace_dir.h"   
+#include "./../delete_comments/delete_comments.h"
+#include "./../guardar_directivas/guardar_directivas.h"
 
 typedef enum {
     ESTADO_NORMAL,       // Texto estándar de C

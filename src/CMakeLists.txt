@@ -30,7 +30,7 @@ add_subdirectory(delete_comments)
 
 add_subdirectory(guardar_directivas)
 add_subdirectory(macrostoring)
-add_subdirectory(replace_directives)
+add_subdirectory(module_replacedir)
 
 add_subdirectory(module_preprocessor)
 

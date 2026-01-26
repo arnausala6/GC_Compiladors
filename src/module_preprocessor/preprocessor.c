@@ -1,6 +1,4 @@
 #include "preprocessor.h"
-#include "./../delete_comments/delete_comments.h"
-#include "./../replace_directives/replace_dir.h"
 
 static int manejar_strings(
     FILE *in,

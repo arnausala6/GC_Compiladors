@@ -109,7 +109,7 @@ int replace_directives_handle_hash(
 
       const char *val = d.as.def.value ? d.as.def.value : "";
 
-      guardar_macro(*macros, d.as.def.name, val);
+      guardar_macro(macros, d.as.def.name, val);
       break;
     }
     case DIR_IFDEF: {
@@ -125,8 +125,15 @@ int replace_directives_handle_hash(
         }
         break;
       }
-      int is_defined = tabla_macros_exists(macros, d.as.ifdef.name);
-
+      
+      // Verificar si la macro está definida
+      int is_defined = 0;
+      for (int i = 0; i < macros->elementos; i++) {
+        Macro *m = macros->macros[i];
+        if (strcmp(d.as.ifdef.name, m->nombre) == 0) {
+          is_defined = 1;
+        }
+      }
       if (ifs_push(ifstack, is_defined) != 0) {
         directiva_free(&d);
         return set_err(err, d.loc, "ifdef nesting too deep");

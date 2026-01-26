@@ -9,4 +9,3 @@ target_include_directories(macrostoring PUBLIC
 )
 
 # El propio directorio incluye el .h
-target_include_directories(delete_comments PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

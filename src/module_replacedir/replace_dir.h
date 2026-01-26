@@ -1,8 +1,9 @@
 #pragma once
 #include <stdio.h>
-#include "directivas_types.h"
-#include "guardar_directivas.h"   // debe declarar guardar_directivas_parse_line(...)
-#include "macrostoring.h"         // Tabla_macros, guardar_macro(...)
+#include "../guardar_directivas/directivas_types.h"
+#include "../guardar_directivas/guardar_directivas.h"   // debe declarar guardar_directivas_parse_line(...)
+#include "../macrostoring/macrostoring.h"         // Tabla_macros, guardar_macro(...)
+#include "../main.h"              // GDError
 
 #define MAX_DIRECTIVE_LINE_LENGTH 2048
 #define MAX_INCLUDE_PATH_LENGTH 1024
@@ -21,5 +22,4 @@ int  ifs_pop(IfStack *st);
 
 
 int replace_directives_handle_hash(
-  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file,
-);
+  FILE *in, FILE *out, int *lineactual, int flags, Tabla_macros *macros, GDError *err, IfStack *ifstack, const char *current_file);

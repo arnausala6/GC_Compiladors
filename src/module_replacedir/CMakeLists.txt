@@ -1,19 +1,19 @@
-# src/replace_directives/CMakeLists.txt
-message(STATUS "(${PROJECT_NAME}) Configuring replace_directives module...")
+# src/module_replacedir/CMakeLists.txt
+message(STATUS "(${PROJECT_NAME}) Configuring module_replacedir module...")
 
-add_library(replace_directives STATIC
+add_library(module_replacedir STATIC
   replace_dir.c
 )
 
-target_include_directories(replace_directives PUBLIC
+target_include_directories(module_replacedir PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # Dependencias reales del módulo
-target_link_libraries(replace_directives
-  PUBLIC
+target_link_libraries(module_replacedir
     guardar_directivas
     macrostoring
+    module_preprocessor 
 )
 
-message(STATUS "(${PROJECT_NAME}) replace_directives configured: Added as static library")
+message(STATUS "(${PROJECT_NAME}) module_replacedir configured: Added as static library")
