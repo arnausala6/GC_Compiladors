@@ -1,4 +1,4 @@
-##Descripción general
+## Descripción general
 
 El contenido del directorio representa el trabajo principal del proyecto, incluyendo todos los módulos implementados y su integración.
 
@@ -7,7 +7,7 @@ El proyecto se centra en:
   - una arquitectura modular
   - y una separación explícita entre análisis, gestión de estado y transformación del código
 
-##Directivas soportadas (estado actual)
+## Directivas soportadas (estado actual)
 
 Se soportan las siguientes directivas del preprocesador:
   #define
@@ -58,7 +58,7 @@ Cada módulo:
 
   En el caso de #include, el motor del preprocesador se invoca de forma recursiva, permitiendo includes anidados.
 
-##Módulo guardar_directivas
+## Módulo guardar_directivas
 
 Este módulo se encarga exclusivamente de detectar y analizar directivas del preprocesador.
 No ejecuta directivas ni modifica el código de salida.
@@ -80,7 +80,7 @@ Responsabilidades
 
 Este módulo es independiente del estado global del preprocesador.
 
-##Módulo replace_directives
+## Módulo replace_directives
 
 Aplica las directivas del preprocesador utilizando la información estructurada proporcionada por guardar_directivas.
 
@@ -95,7 +95,7 @@ Responsabilidades
   
   Liberar correctamente la memoria asociada a cada directiva procesada.
 
-##Módulo macrostoring
+## Módulo macrostoring
 
 Gestiona la tabla global de macros del preprocesador.
 
@@ -104,7 +104,7 @@ Responsabilidade
   Comprobar si una macro está definida.
   Proporcionar acceso a la tabla de macros a otros módulos.
 
-##Módulo macrosubstitute
+## Módulo macrosubstitute
 
 Realiza la sustitución textual de macros durante la lectura del código normal.
 
@@ -113,7 +113,7 @@ Responsabilidades
   Sustituirlos por el cuerpo de la macro si están definidos.
   No altera el flujo de control ni la lógica de directivas.
 
-##Módulo delete_comments
+## Módulo delete_comments
 
 Elimina comentarios del código fuente manteniendo la estructura del programa.
 
@@ -123,4 +123,5 @@ Responsabilidades
   Conservar los saltos de línea.
 
   Mantener la numeración correcta de líneas.
+
 
