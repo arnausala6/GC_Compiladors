@@ -1,3 +1,36 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: guardar_directivas.c
+* Autor: Wassim Ibn Tahar
+* Fecha: 18/01/2026
+*
+* Descripción:
+* Implementa el parseo de directivas del preprocesador a partir de
+* una línea de texto. Su función principal es transformar una línea que contiene
+* una directiva (por ejemplo: define, include, ifdef, endif) en una estructura
+* Directiva con su tipo (DirKind), su localización (SrcLoc) y los campos de datos
+* correspondientes (nombre/valor, ruta, etc)
+*
+* Directivas soportadas:
+*   - define: guarda nombre y valor
+*   - include: soporta únicamente includes entre comillas "file" como ponía en el enunciado
+*   - ifdef: guarda el nombre del símbolo
+*   - endif: marca el cierre del condicional
+*   - otras: se clasifican como DIR_UNKNOWN y se conserva el texto tal cual está
+*
+* Además, incluye funciones auxiliares internas para:
+*   - registrar errores con su localización en el código (GDError + SrcLoc)
+*   - crear copias dinámicas de cadenas (malloc + duplicación) para evitar que Directiva dependa de buffers temporales ni de memoria externa
+*   - limpiar y preparar la línea de entrada (trim de espacios y eliminación de '\n'/'\r')
+*
+* Nota:
+* Este parser no ejecuta la directiva; únicamente la interpreta y la representa
+* de forma estructurada para que otros módulos (modulo preprocesador, módulo
+* de sustitución de directivas, etc) decidan qué acción realizar
+* -----------------------------------------------------------------------------
+*/
+
 #include "guardar_directivas.h"
 
 #include <stdio.h>
