@@ -126,13 +126,21 @@ Responsabilidades:
 
 ## COMO EJECUTAR EL PROYECTO
 Desde la raíz del proyecto, crea una carpeta build, desde la carpeta build haz cmake .. ,  luego haces cmake --build . --config Debug, y se te crea la carpeta Debug.
+
 Desde la carpeta Debug inicias el ejecutable, .\modules_template_main.exe [..\..\tests\(nombre del test).c] [flag]
+
 Aqui tienes la lista de comandos para ejecutar (empiezas en la raiz del proyecto):
+
 mkdir build
+
 cd build
+
 cmake ..
+
 cmake --build . --config Debug
+
 cd Debug
+
 .\modules_template_main.exe [..\..\tests\(nombre del test).c] [flag]
 
 
