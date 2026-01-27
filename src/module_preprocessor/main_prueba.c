@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     
     // Llamada al motor principal [cite: 52]
     // Por ahora pasamos 0 en flags (comportamiento por defecto) [cite: 26]
-    motor_preprocesador(in, out, 0);
+    //motor_preprocesador(in, out, 0);
 
     printf("Proceso finalizado con éxito.\n");
 
