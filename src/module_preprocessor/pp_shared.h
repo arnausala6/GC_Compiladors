@@ -1,3 +1,19 @@
+/*
+ * Archivo: pp_shared.h
+ * Programa: P1PP – Preprocesador
+ * Autor: [Varios autores de módulos]
+ * Fecha: 17/01/2026
+ * Descripción:
+ * Definiciones compartidas entre los distintos módulos del preprocesador.
+ * Este archivo centraliza las estructuras comunes usadas para la gestión
+ * de errores, localización (archivo, línea, columna) y el estado de
+ * condicionales de preprocesado (#ifdef / #endif) mediante un stack.
+ *
+ * Su objetivo es evitar dependencias circulares y duplicación de tipos
+ * entre módulos.
+ */
+
+
 #ifndef PP_SHARED_H
 #define PP_SHARED_H
 

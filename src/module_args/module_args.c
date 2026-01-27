@@ -15,7 +15,8 @@
  * Status:
  *     Initial development — logic to handle arguments is not yet implemented.
  *
- * Author: [Your Name or Team]
+ * Author: Ivan Jimenez
+ * Date: 17/01/2026
  * -----------------------------------------------------------------------------
  */
 
