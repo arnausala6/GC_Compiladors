@@ -1,3 +1,40 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: replace_dir.c
+* Autor: Yeray Espinosa
+* Fecha: 17/01/2026
+*
+ * Descripción:
+ *  Este archivo implementa el módulo de ejecución de directivas del
+ *  preprocesador. Su responsabilidad es procesar y ejecutar las directivas
+ *  del preprocesador una vez que han sido detectadas y parseadas por el
+ *  módulo correspondiente.
+ *
+ *  La funcionalidad proporcionada por este archivo incluye:
+ *   - Procesamiento de directivas #define y almacenamiento de macros.
+ *   - Gestión de directivas de compilación condicional (#ifdef, #endif).
+ *   - Soporte para bloques condicionales anidados mediante la estructura
+ *     IfStack.
+ *   - Procesamiento de directivas #include, invocando recursivamente al
+ *     motor del preprocesador sobre los archivos incluidos.
+ *
+ *  Este módulo NO lee el archivo de entrada carácter a carácter.
+ *  Todas las operaciones de lectura están centralizadas en el módulo
+ *  del preprocesador. Este archivo actúa únicamente sobre líneas completas
+ *  de directivas previamente leídas y parseadas.
+ *
+ *  Interacción con otros módulos:
+ *   - Módulo de guardar macros, para registrar definiciones.
+ *   - Módulo de guardar directivas, que proporciona la estructura Directiva.
+ *   - Módulo del preprocesador, para el procesamiento recursivo de includes.
+ *
+ *  La escritura en el archivo de salida también está controlada por el
+ *  preprocesador principal.
+ * 
+* -----------------------------------------------------------------------------
+*/
+
 #include "replace_dir.h"
 #include "../module_preprocessor/preprocessor.h"
 
