@@ -17,7 +17,7 @@
 #include "user_manual.h"
 #include <string.h>
 
-#define MANPAGE_PATH "user_manual.txt"
+#define MANPAGE_PATH "../../src/user_manual/user_manual.txt"
 
 int print_help(FILE *out) {
     FILE *fp;
