@@ -63,7 +63,7 @@ Cada módulo:
 Este módulo se encarga exclusivamente de detectar y analizar directivas del preprocesador.
 No ejecuta directivas ni modifica el código de salida.
 
-Responsabilidades
+Responsabilidades:
   Analizar líneas que contienen directivas.
   
   Identificar el tipo de directiva:
@@ -84,7 +84,7 @@ Este módulo es independiente del estado global del preprocesador.
 
 Aplica las directivas del preprocesador utilizando la información estructurada proporcionada por guardar_directivas.
 
-Responsabilidades
+Responsabilidades:
   Gestionar directivas #define, #include, #ifdef y #endif.
   
   Mantener una pila de estados condicionales (IfStack) para soportar bloques anidados.
@@ -99,7 +99,7 @@ Responsabilidades
 
 Gestiona la tabla global de macros del preprocesador.
 
-Responsabilidade
+Responsabilidades:
   Almacenar macros de forma dinámica.
   Comprobar si una macro está definida.
   Proporcionar acceso a la tabla de macros a otros módulos.
@@ -108,7 +108,7 @@ Responsabilidade
 
 Realiza la sustitución textual de macros durante la lectura del código normal.
 
-Responsabilidades
+Responsabilidades:
   Detectar identificadores en el código.
   Sustituirlos por el cuerpo de la macro si están definidos.
   No altera el flujo de control ni la lógica de directivas.
@@ -117,12 +117,13 @@ Responsabilidades
 
 Elimina comentarios del código fuente manteniendo la estructura del programa.
 
-Responsabilidades
+Responsabilidades:
   Eliminar comentarios de línea (//) y de bloque (/* ... */).
   
   Conservar los saltos de línea.
 
   Mantener la numeración correcta de líneas.
+
 
 
 
