@@ -154,7 +154,7 @@ int replace_directives_handle_hash(
     case DIR_INCLUDE:{
       if (!ifs_is_active(ifstack)) break;
       int rc;
-      printf("Processing include of '%s' at %s:%d\n", d.as.inc.path, current_file, d.loc.line);
+      //printf("Processing include of '%s' at %s:%d\n", d.as.inc.path, current_file, d.loc.line);
       if (!d.as.inc.path || d.as.inc.path[0] == '\0') {
         rc = set_err(err, d.loc, "include without path");
         directiva_free(&d);

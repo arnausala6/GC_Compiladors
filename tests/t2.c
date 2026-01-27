@@ -39,7 +39,7 @@
         valor = valor + 1;
     #endif
 
-    #ifdef 
+    #ifdef MODE_DEBUG
         // Incremento extra en modo debug
         valor = valor + 10;
         #ifdef ENABLE_LOGS
