@@ -1,37 +1,24 @@
-Descripción general
+##Descripción general
 
-Este repositorio contiene la implementación de un preprocesador parcial del lenguaje C, desarrollado como parte de la asignatura de Compiladores.
-El contenido del directorio src/ representa el trabajo principal del proyecto, incluyendo todos los módulos implementados y su integración.
+El contenido del directorio representa el trabajo principal del proyecto, incluyendo todos los módulos implementados y su integración.
 
 El proyecto se centra en:
+  - una definición conceptual clara del diseño
+  - una arquitectura modular
+  - y una separación explícita entre análisis, gestión de estado y transformación del código
 
-una definición conceptual clara del diseño,
+##Directivas soportadas (estado actual)
 
-una arquitectura modular,
-
-y una separación explícita entre análisis, gestión de estado y transformación del código.
-
-El objetivo no es reproducir completamente el preprocesador de C estándar, sino implementar un subconjunto representativo, bien estructurado y extensible, que demuestre la comprensión del proceso de preprocesado.
-
-Directivas soportadas (estado actual)
-
-En la versión actual del proyecto se soportan las siguientes directivas del preprocesador:
-
-#define
-
-#include "file" (includes locales)
-
-#ifdef
-
-#endif
+Se soportan las siguientes directivas del preprocesador:
+  #define
+  #include "file" (includes locales)
+  #ifdef
+  #endif
 
 Cualquier otra directiva:
-
-no provoca error,
-
-se ignora o se imprime como código normal,
-
-no interrumpe la ejecución del programa.
+  - no provoca error
+  - se ignora o se imprime como código normal
+  - no interrumpe la ejecución del programa
 
 Estructura del código fuente
 
@@ -47,121 +34,93 @@ src/
 
 
 Cada módulo:
+  - tiene una responsabilidad única
+  - puede desarrollarse y probarse de forma independiente
 
-tiene una responsabilidad única,
+##Flujo general del preprocesador
+  El motor del preprocesador lee el fichero de entrada carácter a carácter.
+  
+  Según el modo de ejecución, se eliminan o se conservan los comentarios.
+  
+  Cuando se detecta el carácter # al inicio de una línea:
+    el control se delega al módulo replace_directives.
+    
+  El módulo replace_directives:
+    lee la línea completa de la directiva,
+    la analiza mediante guardar_directiva_parse_line,
+    decide qué acción aplicar según el tipo de directiva.
 
-puede desarrollarse y probarse de forma independiente,
+  Se actualiza el estado global del preprocesador:
+    la tabla de macros (Tabla_macros),
+    la pila de condicionales (IfStack).
 
-se integra mediante interfaces claras.
+  El código resultante se escribe en el fichero de salida.
 
-Flujo general del preprocesador
+  En el caso de #include, el motor del preprocesador se invoca de forma recursiva, permitiendo includes anidados.
 
-El motor del preprocesador lee el fichero de entrada carácter a carácter.
-
-Según el modo de ejecución, se eliminan o se conservan los comentarios.
-
-Cuando se detecta el carácter # al inicio de una línea:
-
-el control se delega al módulo replace_directives.
-
-El módulo replace_directives:
-
-lee la línea completa de la directiva,
-
-la analiza mediante guardar_directiva_parse_line,
-
-decide qué acción aplicar según el tipo de directiva.
-
-Se actualiza el estado global del preprocesador:
-
-la tabla de macros (Tabla_macros),
-
-la pila de condicionales (IfStack).
-
-El código resultante se escribe en el fichero de salida.
-
-En el caso de #include, el motor del preprocesador se invoca de forma recursiva, permitiendo includes anidados.
-
-Módulo guardar_directivas
-Descripción
+##Módulo guardar_directivas
 
 Este módulo se encarga exclusivamente de detectar y analizar directivas del preprocesador.
 No ejecuta directivas ni modifica el código de salida.
 
 Responsabilidades
+  Analizar líneas que contienen directivas.
+  
+  Identificar el tipo de directiva:
+    define, include, ifdef, endif u otras.
+  
+  Extraer la información relevante:
+    nombre y valor de macros,
+    fichero incluido,
+    localización en el código (SrcLoc).
 
-Analizar líneas que contienen directivas.
+  Devolver una estructura Directiva con la información parseada.
 
-Identificar el tipo de directiva:
-
-define, include, ifdef, endif u otras.
-
-Extraer la información relevante:
-
-nombre y valor de macros,
-
-fichero incluido,
-
-localización en el código (SrcLoc).
-
-Devolver una estructura Directiva con la información parseada.
-
-Gestionar errores de sintaxis mediante la estructura GDError.
+  Gestionar errores de sintaxis mediante la estructura GDError.
 
 Este módulo es independiente del estado global del preprocesador.
 
-Módulo replace_directives
-Descripción
+##Módulo replace_directives
 
 Aplica las directivas del preprocesador utilizando la información estructurada proporcionada por guardar_directivas.
 
 Responsabilidades
+  Gestionar directivas #define, #include, #ifdef y #endif.
+  
+  Mantener una pila de estados condicionales (IfStack) para soportar bloques anidados.
+  
+  Aplicar directivas solo cuando el bloque actual está activo.
+  
+  Procesar includes locales mediante llamadas recursivas al motor del preprocesador.
+  
+  Liberar correctamente la memoria asociada a cada directiva procesada.
 
-Gestionar directivas #define, #include, #ifdef y #endif.
-
-Mantener una pila de estados condicionales (IfStack) para soportar bloques anidados.
-
-Aplicar directivas solo cuando el bloque actual está activo.
-
-Procesar includes locales mediante llamadas recursivas al motor del preprocesador.
-
-Liberar correctamente la memoria asociada a cada directiva procesada.
-
-Módulo macrostoring
-Descripción
+##Módulo macrostoring
 
 Gestiona la tabla global de macros del preprocesador.
 
-Responsabilidades
+Responsabilidade
+  Almacenar macros de forma dinámica.
+  Comprobar si una macro está definida.
+  Proporcionar acceso a la tabla de macros a otros módulos.
 
-Almacenar macros de forma dinámica.
-
-Comprobar si una macro está definida.
-
-Proporcionar acceso a la tabla de macros a otros módulos.
-
-Módulo macrosubstitute
-Descripción
+##Módulo macrosubstitute
 
 Realiza la sustitución textual de macros durante la lectura del código normal.
 
 Responsabilidades
+  Detectar identificadores en el código.
+  Sustituirlos por el cuerpo de la macro si están definidos.
+  No altera el flujo de control ni la lógica de directivas.
 
-Detectar identificadores en el código.
-
-Sustituirlos por el cuerpo de la macro si están definidos.
-
-No altera el flujo de control ni la lógica de directivas.
-
-Módulo delete_comments
-Descripción
+##Módulo delete_comments
 
 Elimina comentarios del código fuente manteniendo la estructura del programa.
 
 Responsabilidades
+  Eliminar comentarios de línea (//) y de bloque (/* ... */).
+  
+  Conservar los saltos de línea.
 
-Eliminar comentarios de línea (//) y de bloque (/* ... */).
+  Mantener la numeración correcta de líneas.
 
-Conservar los saltos de línea.
-
-Mantener la numeración correcta de líneas.
