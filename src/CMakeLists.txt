@@ -27,12 +27,12 @@ message(STATUS "   - (${PROJECT_NAME}) Added utils library")
 # Add modules subdirectories
 add_subdirectory(module_args)
 add_subdirectory(delete_comments)
-
 add_subdirectory(guardar_directivas)
 add_subdirectory(macrostoring)
 add_subdirectory(module_replacedir)
 add_subdirectory(macro_substitute)
 add_subdirectory(module_preprocessor)
+add_subdirectory(user_manual)
 
 message(STATUS "   - (${PROJECT_NAME}) Added modules subdirectories")
 

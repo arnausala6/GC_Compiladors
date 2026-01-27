@@ -1,0 +1,9 @@
+This is the man page!!!
+In here, we are going to explain how does our code works
+We have lots of modules...
+:
+:
+:
+:
+:
+end of file

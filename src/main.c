@@ -12,11 +12,18 @@ int main(int argc, char *argv[]) {
 
     fprintf(ofile, "Starting module args ...\n");
     int mode = process_arguments(argc, argv);
+    
     if(mode == -1) {
         fprintf(ofile, "Error processing arguments. Exiting.\n");
         fclose(ofile);
         return 1;
     }
+
+    if(mode == 3){
+        print_help(stdout);
+        return 0;
+    }
+
     const char *input_path = argv[1];
     printf("Archivo de entrada: %s\n", argv[1]);
     fflush(stdout); // Fuerza a la consola a imprimir lo que tenga en memoria

@@ -1,79 +1,128 @@
 ## Descripción general
 
-Este proyecto implementa un preprocesador de C.
+El contenido del directorio representa el trabajo principal del proyecto, incluyendo todos los módulos implementados y su integración.
+
+El proyecto se centra en:
+  - una definición conceptual clara del diseño
+  - una arquitectura modular
+  - y una separación explícita entre análisis, gestión de estado y transformación del código
 
 ## Directivas soportadas (estado actual)
 
-En el estado actual del proyecto se soportan las siguientes directivas:
+Se soportan las siguientes directivas del preprocesador:
+  #define
+  #include "file" (includes locales)
+  #ifdef
+  #endif
 
-    #define
+Cualquier otra directiva:
+  - no provoca error
+  - se ignora o se imprime como código normal
+  - no interrumpe la ejecución del programa
 
-    #include "file"    
+Estructura del código fuente
 
-    #ifdef
+El directorio src/ está organizado en módulos independientes, cada uno con una responsabilidad bien definida:
 
-    #endif
-
-Cualquier otra directiva: no provoca error, se ignora o se trata como código normal, no rompe la ejecución del programa
-
-Estructura del proyecto
 src/
- ├── guardar_directivas/     # Detección y almacenamiento de directivas
- ├── macrosubstitute/        # Sustitucion de macros
- ├── module-directiva/       # Sustitucion de directivas
- ├── delete_comments/        # Eliminar comentarios
- └── macrostoring/           # Almacenamiento de macros
+├── guardar_directivas/     # Parseo y representación estructurada de directivas
+├── replace_directives/    # Aplicación de directivas del preprocesador
+├── macrostoring/          # Almacenamiento dinámico de macros
+├── macrosubstitute/       # Sustitución textual de macros
+├── delete_comments/       # Eliminación de comentarios
+├── module_preprocessor/  # Motor principal del preprocesador
 
 
-Cada módulo tiene una responsabilidad clara y se desarrolla de forma independiente.
+Cada módulo:
+  - tiene una responsabilidad única
+  - puede desarrollarse y probarse de forma independiente
+
+## Flujo general del preprocesador
+  El motor del preprocesador lee el fichero de entrada carácter a carácter.
+  
+  Según el modo de ejecución, se eliminan o se conservan los comentarios.
+  
+  Cuando se detecta el carácter # al inicio de una línea:
+    el control se delega al módulo replace_directives.
+    
+  El módulo replace_directives:
+    lee la línea completa de la directiva,
+    la analiza mediante guardar_directiva_parse_line,
+    decide qué acción aplicar según el tipo de directiva.
+
+  Se actualiza el estado global del preprocesador:
+    la tabla de macros (Tabla_macros),
+    la pila de condicionales (IfStack).
+
+  El código resultante se escribe en el fichero de salida.
+
+  En el caso de #include, el motor del preprocesador se invoca de forma recursiva, permitiendo includes anidados.
 
 ## Módulo guardar_directivas
 
-    Lee un fichero de código fuente línea a línea
+Este módulo se encarga exclusivamente de detectar y analizar directivas del preprocesador.
+No ejecuta directivas ni modifica el código de salida.
 
-    Detecta líneas que comienzan por #
+Responsabilidades
+  Analizar líneas que contienen directivas.
+  
+  Identificar el tipo de directiva:
+    define, include, ifdef, endif u otras.
+  
+  Extraer la información relevante:
+    nombre y valor de macros,
+    fichero incluido,
+    localización en el código (SrcLoc).
 
-    Identifica el tipo de directiva
+  Devolver una estructura Directiva con la información parseada.
 
-    Extrae la información básica (nombre, valor, fichero, localización)
+  Gestionar errores de sintaxis mediante la estructura GDError.
 
-    Guarda las directivas en una lista dinámica en memoria
+Este módulo es independiente del estado global del preprocesador.
 
-!! No ejecuta las directivas ni modifica el código de salida.
-Su única responsabilidad es detectar y almacenar información estructurada para otros módulos.
+## Módulo replace_directives
 
-Compilación
+Aplica las directivas del preprocesador utilizando la información estructurada proporcionada por guardar_directivas.
 
-Desde la carpeta del modulo:
-mkdir build
-cd build
-cmake ..
-cmake --build .
+Responsabilidades
+  Gestionar directivas #define, #include, #ifdef y #endif.
+  
+  Mantener una pila de estados condicionales (IfStack) para soportar bloques anidados.
+  
+  Aplicar directivas solo cuando el bloque actual está activo.
+  
+  Procesar includes locales mediante llamadas recursivas al motor del preprocesador.
+  
+  Liberar correctamente la memoria asociada a cada directiva procesada.
+
+## Módulo macrostoring
+
+Gestiona la tabla global de macros del preprocesador.
+
+Responsabilidade
+  Almacenar macros de forma dinámica.
+  Comprobar si una macro está definida.
+  Proporcionar acceso a la tabla de macros a otros módulos.
+
+## Módulo macrosubstitute
+
+Realiza la sustitución textual de macros durante la lectura del código normal.
+
+Responsabilidades
+  Detectar identificadores en el código.
+  Sustituirlos por el cuerpo de la macro si están definidos.
+  No altera el flujo de control ni la lógica de directivas.
+
+## Módulo delete_comments
+
+Elimina comentarios del código fuente manteniendo la estructura del programa.
+
+Responsabilidades
+  Eliminar comentarios de línea (//) y de bloque (/* ... */).
+  
+  Conservar los saltos de línea.
+
+  Mantener la numeración correcta de líneas.
 
 
-Ejecución
 
-./test_guardar_directivas ../test.c
-
-
-Ejemplo básico
-
-Entrada (test.c):
-
-#define X 10
-#ifdef X
-int a;
-#endif
-
-
-Salida esperada:
-
-La directiva #define y #ifdef se detectan
-Se almacenan en memoria
-
-
-Limitaciones actuales
-
-No se soportan expresiones en #if o #elif
-No se procesan includes del sistema (<stdio.h>)
-No se genera un fichero de salida final
