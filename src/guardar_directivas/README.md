@@ -37,7 +37,7 @@ Cada módulo:
   - tiene una responsabilidad única
   - puede desarrollarse y probarse de forma independiente
 
-##Flujo general del preprocesador
+## Flujo general del preprocesador
   El motor del preprocesador lee el fichero de entrada carácter a carácter.
   
   Según el modo de ejecución, se eliminan o se conservan los comentarios.
@@ -123,5 +123,6 @@ Responsabilidades
   Conservar los saltos de línea.
 
   Mantener la numeración correcta de líneas.
+
 
 
