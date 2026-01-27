@@ -36,6 +36,8 @@ int main(int argc, char *argv[]) {
     macros.elementos = 0;
     macros.macros = NULL;
     ifs_init(&ifstack); 
+
+    
     
     int rc = motor_preprocesador(input_file, ofile, mode, input_path, &macros, &ifstack, &err);
     if (rc != 0) fprintf(stderr, "ERR %s:%d:%d %s\n", input_path, 0, 0, "Error in preprocessor");

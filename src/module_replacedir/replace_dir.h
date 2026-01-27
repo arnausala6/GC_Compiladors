@@ -9,6 +9,7 @@
 
 
 /* Estado del if-stack */
+int ifs_init(IfStack *st);
 int  ifs_is_active(const IfStack *st);
 int  ifs_push(IfStack *st, int cond_true);
 int  ifs_pop(IfStack *st);
