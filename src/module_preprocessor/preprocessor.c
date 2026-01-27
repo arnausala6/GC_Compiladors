@@ -5,6 +5,19 @@
 
 #define MAX_IDENT 256
 
+/**
+ * @brief Maneja y procesa literales de cadena (strings) y caracteres.
+ * * Esta función se activa cuando el motor encuentra una comilla simple o doble.
+ * Su objetivo es copiar el contenido del literal directamente al archivo de 
+ * salida sin procesar macros o comentarios dentro de él, respetando las
+ * secuencias de escape (como \") y manteniendo el conteo de líneas.
+ * * @param in           Puntero al archivo de entrada.
+ * @param out          Puntero al archivo de salida.
+ * @param quote        El tipo de comilla detectada (' o ").
+ * @param linea_actual Puntero al contador de líneas global para actualizarlo si hay saltos de línea.
+ * @param ifstack      Pila de condicionales para verificar si el bloque actual debe escribirse.
+ * @return int         0 si finaliza correctamente, 1 si hay error de parámetros.
+ */
 static int manejar_strings(
     FILE *in,
     FILE *out,
@@ -37,6 +50,22 @@ static int manejar_strings(
     return 0;
 }
 
+/**
+ * @brief Función principal del motor de preprocesamiento.
+ * * Implementa una máquina de estados para procesar el código fuente. Se encarga de:
+ * 1. Detectar directivas de preprocesador (empezando con # en una línea nueva).
+ * 2. Identificar y eliminar comentarios (dependiendo de los flags).
+ * 3. Reconocer identificadores y llamar al módulo de sustitución de macros.
+ * 4. Gestionar bloques condicionales (#ifdef, #ifndef, etc.) mediante ifstack.
+ * * @param in        Puntero al archivo fuente de entrada.
+ * @param out       Puntero al archivo de destino procesado.
+ * @param flags     Modo de operación: 0 (comentarios), 1 (directivas), 2 (ambos).
+ * @param fullpath  Ruta del archivo actual (para manejo de errores e inclusiones).
+ * @param macros    Tabla de símbolos que contiene las macros definidas.
+ * @param ifstack   Estructura de pila para el control de flujo de directivas condicionales.
+ * @param err       Estructura para el reporte y gestión de errores.
+ * @return int      0 si el proceso es exitoso, 1 si ocurre un error crítico.
+ */
 int motor_preprocesador(
     FILE *in, FILE *out, int flags,
     const char *fullpath,
