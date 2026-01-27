@@ -1,3 +1,19 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: directivas_types.c
+* Autor: Wassim Ibn Tahar
+* Fecha: 18/01/2026
+*
+* Descripción:
+* Este módulo implementa la liberación de memoria dinámica asociada a la Directiva. 
+* Dado que los datos específicos de cada directiva (nombre, valor, ruta, etc.) se almacenan mediante una unión,
+* esta función se encarga de liberar únicamente los campos válidos según el tipo de directiva (DirKind).
+*
+* Despues de liberar la memoria, la estructura se deja en un estado seguro reiniciando el tipo a DIR_UNKNOWN y anulando los punteros internos
+* -----------------------------------------------------------------------------
+*/
+
 #include "directivas_types.h"
 #include <stdlib.h>
 
