@@ -1,3 +1,0 @@
-/mnt/c/Users/arnau/OneDrive/Escriptori/repos_uni/GC_Compiladors/src/delete_comments/build/CMakeFiles/delete_comments.dir
-/mnt/c/Users/arnau/OneDrive/Escriptori/repos_uni/GC_Compiladors/src/delete_comments/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/arnau/OneDrive/Escriptori/repos_uni/GC_Compiladors/src/delete_comments/build/CMakeFiles/rebuild_cache.dir

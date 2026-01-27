@@ -1,13 +1,21 @@
 /*
-delete_comments.c
----------------------------------------------------------------------------
-Implementación de eliminación de comentarios para P1PP.
-
-- Elimina comentarios: // y / * ... * /
-- Sustituye cada comentario por un espacio
-- Mantiene saltos de línea para no colapsar el código
----------------------------------------------------------------------------
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: delete_comments.c
+* Autor: Arnau Sala
+* Fecha: 16/01/2026
+*
+* Descripción:
+* Este módulo implementa la eliminación de comentarios del código fuente.
+* Soporta comentarios de una línea (//) y de bloque (/ * ... * /).
+* Cada comentario eliminado se sustituye por un espacio y se conservan los
+* saltos de línea para no modificar la estructura del código.
+*
+* El módulo puede usarse de forma integrada dentro del preprocesador o de
+* manera aislada para pruebas individuales.
+* -----------------------------------------------------------------------------
 */
+
 
 #include "delete_comments.h"
 

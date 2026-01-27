@@ -50,14 +50,14 @@ static int manejar_strings(
     return 0;
 }
 
-/**
+/*
  * @brief Función principal del motor de preprocesamiento.
  * * Implementa una máquina de estados para procesar el código fuente. Se encarga de:
  * 1. Detectar directivas de preprocesador (empezando con # en una línea nueva).
  * 2. Identificar y eliminar comentarios (dependiendo de los flags).
  * 3. Reconocer identificadores y llamar al módulo de sustitución de macros.
  * 4. Gestionar bloques condicionales (#ifdef, #ifndef, etc.) mediante ifstack.
- * * @param in        Puntero al archivo fuente de entrada.
+ * @param in        Puntero al archivo fuente de entrada.
  * @param out       Puntero al archivo de destino procesado.
  * @param flags     Modo de operación: 0 (comentarios), 1 (directivas), 2 (ambos).
  * @param fullpath  Ruta del archivo actual (para manejo de errores e inclusiones).

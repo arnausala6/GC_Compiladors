@@ -1,4 +1,25 @@
 /*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: test_delete_comments.c
+* Autor: Arnau Sala
+* Fecha: 21/01/2026
+*
+* Descripción:
+* Test de integración del módulo delete_comments dentro del motor del
+* preprocesador.
+* Permite comprobar que la eliminación de comentarios funciona cuando
+* el módulo es llamado desde el preprocesador completo.
+*
+* Nota:
+* Otros elementos del preprocesador (macros, directivas) pueden afectar
+* al resultado, pero este test se centra en validar la eliminación de
+* comentarios.
+* -----------------------------------------------------------------------------
+*/
+
+
+/*
 EL TEST FUNCIONA, PERO BORRA COSAS DE MAS --> ESO ES UN TEMA DE MACROS Y DIRECTIVAS. LOS COMENTARIOS FUNCIONAN BIEN 
 Para ejecutar, abrimos una terminal desde la raiz del proyecto (.../GC_Compiladors) y hacemos lo siguiente:
 

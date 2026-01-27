@@ -1,4 +1,22 @@
 /*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: test_delete_comments_individual.c
+* Autor: Arnau Sala
+* Fecha: 21/01/2026
+*
+* Descripción:
+* Test individual del módulo delete_comments.
+* Permite comprobar de forma aislada que la eliminación de comentarios
+* funciona correctamente sin depender del resto del preprocesador.
+*
+* El test lee un archivo de entrada, elimina los comentarios y genera
+* un archivo de salida para su verificación manual.
+* -----------------------------------------------------------------------------
+*/
+
+
+/*
 EL TEST FUNCIONA, PERO SOLO SIRVE PARA EL MODULO DE ELIMINAR COMENTARIOS DE FORMA AISLADA
 Para ejecutar, abrimos una terminal desde la raiz del proyecto (.../GC_Compiladors) y hacemos lo siguiente:
 

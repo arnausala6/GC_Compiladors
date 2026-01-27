@@ -1,3 +1,19 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: user_manual.c
+* Autor: Arnau Sala
+* Fecha: 17/01/2026
+*
+* Descripción:
+* Este módulo se encarga de mostrar el manual de usuario del preprocesador.
+* Lee el contenido del archivo de texto del manual y lo imprime por la terminal.
+*
+* Se utiliza cuando el programa se ejecuta con la opción -help.
+* -----------------------------------------------------------------------------
+*/
+
+
 #include "user_manual.h"
 #include <string.h>
 

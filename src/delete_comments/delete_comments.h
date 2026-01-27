@@ -1,3 +1,22 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: delete_comments.h
+* Autor: Arnau Sala
+* Fecha: 16/01/2026
+*
+* Descripción:
+* Archivo de cabecera del módulo delete_comments.
+* Declara las funciones utilizadas para eliminar comentarios del código 
+* fuente y para realizar pruebas del módulo de forma aislada.
+*
+* Define el contrato entre el motor del preprocesador y el módulo de
+* eliminación de comentarios.
+* -----------------------------------------------------------------------------
+*/
+
+
+
 #ifndef DELETE_COMMENTS_H
 #define DELETE_COMMENTS_H
 
