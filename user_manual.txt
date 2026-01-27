@@ -1,9 +1,182 @@
-This is the man page!!!
-In here, we are going to explain how does our code works
-We have lots of modules...
-:
-:
-:
-:
-:
-end of file
+MANUAL DE USUARIO - P1PP (Preprocesador de C)
+
+1) Vision general
+P1PP es un preprocesador simplificado para ficheros de codigo C, pensado para practicas de compiladores.
+Lee un fichero de entrada y genera una version "preprocesada" aplicando, segun el modo elegido:
+- Eliminacion de comentarios.
+- Procesado de algunas directivas del preprocesador (#define, #include "...", #ifdef, #endif).
+- Sustitucion textual de macros sencillas (sin parametros).
+
+IMPORTANTE:
+- La salida del programa se escribe principalmente en un fichero de LOG (ver seccion 5). No genera un .i limpio aparte.
+- La salida puede aparecer repartida entre el log y la consola, porque algunos mensajes se imprimen por stdout.
+
+
+2) Uso desde linea de comandos
+Forma general:
+  P1PP <archivo_entrada> [opciones]
+
+Ayuda:
+  P1PP -help
+  (tambien funciona: P1PP <archivo_entrada> -help)
+
+Argumentos obligatorios:
+- archivo_entrada: ruta del fichero a preprocesar.
+
+Argumentos opcionales:
+- -c, -d, -all, -help
+
+Orden de argumentos (muy importante):
+- En ejecucion normal, el primer argumento tras el ejecutable SIEMPRE se interpreta como archivo de entrada.
+  Ejemplo NO valido:  P1PP -c entrada.c
+  (en ese caso intentaria abrir "-c" como fichero de entrada)
+- Las opciones se leen a partir del segundo argumento (despues del archivo_entrada).
+
+
+3) Opciones (flags) soportadas
+
+3.1) -help
+Significado:
+- Muestra este manual de usuario y termina.
+
+Efecto:
+- Imprime por pantalla el contenido del fichero "user_manual.txt".
+- Sale con codigo 0 (no ejecuta el preprocesado).
+
+Notas:
+- El programa busca "user_manual.txt" en el directorio de trabajo actual.
+  Si no puede abrirlo, muestra: "Error loading the user manual."
+
+
+3.2) -c
+Significado:
+- Modo "comentarios".
+
+Efecto real:
+- Elimina comentarios de linea (// ...) y de bloque (/* ... */).
+- Cada comentario eliminado se sustituye por un solo espacio.
+- Se conservan los saltos de linea (no "aplana" el fichero).
+- No procesa directivas del preprocesador: las lineas que empiezan por # se copian tal cual.
+  (por tanto, en este modo normalmente no se cargan macros desde #define).
+
+Interaccion con otras opciones:
+- Si se combina con -d (en cualquier orden), el programa activa el modo equivalente a -all.
+
+
+3.3) -d
+Significado:
+- Modo "directivas".
+
+Efecto real:
+- Procesa directivas cuando el caracter # aparece al inicio de una linea (permitiendo espacios/tabs antes del #).
+- Directivas implementadas:
+  - #define NOMBRE valor...   (define macros sin parametros)
+  - #include "fichero"       (include local con comillas)
+  - #ifdef NOMBRE            (activa/desactiva el bloque segun si la macro existe)
+  - #endif                   (cierra el bloque)
+- No elimina comentarios: los comentarios se mantienen.
+
+Interaccion con otras opciones:
+- Si se combina con -c (en cualquier orden), el programa activa el modo equivalente a -all.
+
+
+3.4) -all
+Significado:
+- Modo "todo".
+
+Efecto real:
+- Procesa directivas (como en -d) y elimina comentarios (como en -c).
+
+
+4) Ficheros de entrada
+- El programa abre el fichero con lectura de texto (fopen(ruta, "r")).
+- No impone extension: puedes pasar .c, .h o cualquier fichero de texto.
+- En caso de que el fichero no exista o no se pueda abrir, el comportamiento no esta controlado con mensajes claros (limitacion).
+
+
+5) Salida (donde se escribe y que contiene)
+
+5.1) Donde se escribe
+Por defecto, el programa intenta escribir un log en:
+  ./logs/
+
+El nombre del log incluye fecha y hora y el nombre base configurado en el programa, por ejemplo:
+  ./logs/YYYY_MM_DD_HH_MM_proj_modules_template.log
+
+Si la carpeta ./logs/ no existe o no se puede abrir el fichero, el programa usa stdout.
+
+IMPORTANTE:
+- Algunos mensajes se imprimen por consola (stdout) aunque exista log (por ejemplo, avisos y mensajes de "include").
+  Por eso puedes ver parte de la informacion en consola y parte en el fichero de log.
+
+5.2) Que contiene
+La salida (log) mezcla:
+- Mensajes de ejecucion (por ejemplo, listado de argumentos y mensajes de fin).
+- El texto preprocesado del fichero de entrada (y de los includes procesados).
+
+
+6) Que transformaciones aplica P1PP
+
+6.1) Comentarios
+Cuando el modo incluye eliminacion de comentarios (-c o -all):
+- Elimina // ... hasta fin de linea.
+- Elimina /* ... */ (puede contener saltos de linea; se mantienen).
+- Sustituye el comentario por un espacio.
+
+6.2) Macros (#define y sustitucion)
+En modos que procesan directivas (-d o -all):
+- #define guarda macros de sustitucion textual SIN parametros.
+- Cuando el motor encuentra un identificador (letras, digitos y _), si coincide con una macro guardada, escribe su "cuerpo".
+
+Notas:
+- No hay macros con argumentos.
+- No hay expansion recursiva (si el cuerpo contiene otro nombre de macro, no se reexpande automaticamente).
+- Dentro de literales de cadena ("...") o de caracter ('...') no se sustituyen macros ni se detectan comentarios.
+
+6.3) Condicionales (#ifdef / #endif)
+En modos que procesan directivas (-d o -all):
+- #ifdef NOMBRE activa el bloque solo si existe una macro llamada NOMBRE.
+- #endif cierra el bloque.
+- Los bloques pueden anidarse (con un limite interno).
+
+Si un bloque esta inactivo:
+- El texto normal no se escribe.
+- Las directivas #define y #include dentro del bloque NO se aplican.
+- #ifdef anidado se gestiona para mantener la estructura de anidamiento.
+
+6.4) Includes (#include "...")
+En modos que procesan directivas (-d o -all):
+- Se reconoce unicamente la forma con comillas:  #include "fichero"
+- El preprocesador inserta el contenido del fichero incluido en la salida (no imprime la linea #include).
+- Los includes pueden ser anidados.
+
+
+7) Ejemplos
+
+Ejecutar en modo por defecto (equivale a -c):
+  P1PP entrada.c
+
+Eliminar comentarios explicitamente:
+  P1PP entrada.c -c
+
+Procesar directivas (sin borrar comentarios):
+  P1PP entrada.c -d
+
+Procesar directivas y borrar comentarios:
+  P1PP entrada.c -all
+
+Combinar -c y -d (equivale a -all):
+  P1PP entrada.c -c -d
+  P1PP entrada.c -d -c
+
+Mostrar ayuda:
+  P1PP -help
+  P1PP entrada.c -help
+
+
+8) Limitaciones conocidas (estado actual)
+- El programa asume que hay archivo de entrada en ejecucion normal. Si no se proporciona, no esta validado.
+- Directivas NO implementadas: #ifndef, #else, #elif, #undef, #pragma, #error, etc.
+- Includes con <...> no se procesan como include: se tratan como una directiva "desconocida" y se imprimen tal cual.
+- La resolucion de rutas de #include esta pensada para rutas con "/". En Windows, si usas "\" en la ruta del archivo,
+  puede no detectar correctamente el directorio del fichero actual (recomendacion: usar rutas relativas simples o "/").
