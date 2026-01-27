@@ -39,9 +39,22 @@
         valor = valor + 1;
     #endif
 
-    #ifdef MODE_DEBUG
+    #ifdef 
         // Incremento extra en modo debug
         valor = valor + 10;
+        #ifdef ENABLE_LOGS
+            // Incremento extra en modo debug si logs estan activos
+            valor = valor + 100;
+            #ifdef MODE_DEBUG
+                // Incremento extra en modo debug si logs estan activos y modo debug
+                valor = valor + 1000;
+            #endif
+        #endif
+        #ifdef MODE_DEBUG
+            // Incremento extra en modo debug
+            valor = valor + 20;
+            #include "..\..\tests\t4.h"
+        #endif
     #endif
 
         // Incremento normal
