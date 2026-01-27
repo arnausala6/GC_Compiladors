@@ -32,6 +32,11 @@ void print_arguments(int argc, char *argv[]) {
 int process_arguments(int argc, char *argv[]) {
     print_arguments(argc, argv);
     int mode = 0; // modo por defecto (-c mode)
+    
+    if (argc >= 2 && strcmp(argv[1], "-help") == 0) {
+        return 3;
+    }
+
     for(int i = 2; i < argc; i++) {
         if(strcmp(argv[i], "-c") == 0) {
             mode = 0;
