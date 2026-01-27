@@ -1,3 +1,19 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P1PP – Preprocesador
+* Archivo: guardar_directivas.h
+* Autor: Wassim Ibn Tahar
+* Fecha: 18/01/2026
+*
+* Descripción:
+* Este archivo define la interfaz del módulo de guardar y parseo de directivas
+* Proporciona las declaraciones necesarias para analizar
+* líneas que contienen directivas del preprocesador y representarlas de forma
+* estructurada mediante el tipo Directiva.
+*
+* -----------------------------------------------------------------------------
+*/
+
 #ifndef GUARDAR_DIRECTIVAS_H
 #define GUARDAR_DIRECTIVAS_H
 
