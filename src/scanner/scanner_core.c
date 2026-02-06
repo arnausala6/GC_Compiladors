@@ -77,7 +77,7 @@ static void set_pending(Scanner *s, int ch, SrcLoc loc) {
     s->pending_loc = loc;
 }
 
-
+ 
 static void emit_token(
     Scanner *s,
     SrcLoc start_loc,
