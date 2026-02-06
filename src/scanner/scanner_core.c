@@ -2,17 +2,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-
-/* ============================================================
-   NOTA IMPORTANTE PARA EL GRUPO
-   ------------------------------------------------------------
-   Todas las funciones de otros módulos aparecen aquí
-   COMENTADAS, indicando:
-   - cuándo se usan
-   - qué deberían hacer
-   - qué parámetros necesitan
-   ============================================================ */
-
 #define LEXEME_MAX 256
 
 static void advance_loc(SrcLoc *loc, int ch) {
