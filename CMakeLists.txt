@@ -42,8 +42,8 @@ enable_testing()
 message(STATUS " - (${PROJECT_NAME}) Testing enabled")
 
 # Add source modules and main program
-add_subdirectory(preprocessor)
-message(STATUS " - (${PROJECT_NAME}) Added preprocessor/ directory")
+# add_subdirectory(preprocessor)
+# message(STATUS " - (${PROJECT_NAME}) Added preprocessor/ directory")
 
 # Add source modules and main program
 add_subdirectory(src)
@@ -56,7 +56,22 @@ message(STATUS " - (${PROJECT_NAME}) Added tests/ directory")
 # Optionally build main executable if needed 
 # This executable links together all module libraries.
 # (to have modular test for each module in parallel)
-add_executable(preprocessor_modules_template_main preprocessor/main.c)
-target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments utils module_replacedir guardar_directivas macrostoring macro_substitute)
-message(STATUS " - (${PROJECT_NAME}) Modules Template Main executable 'preprocessor_modules_template_main' linked with module_args and delete_comments and module_preprocessor")
-target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments user_manual utils module_replacedir guardar_directivas macrostoring macro_substitute)
+# add_executable(preprocessor_modules_template_main preprocessor/main.c)
+# target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments utils module_replacedir guardar_directivas macrostoring macro_substitute)
+# message(STATUS " - (${PROJECT_NAME}) Modules Template Main executable 'preprocessor_modules_template_main' linked with module_args and delete_comments and module_preprocessor")
+# target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments user_manual utils module_replacedir guardar_directivas macrostoring macro_substitute)
+
+# 1. Definimos el ejecutable usando el main.c que está dentro de src/
+add_executable(scanner_main src/main.c)
+
+# 2. Enlazamos las librerías necesarias:
+#    - scanner_module_args: Para procesar las flags (-i, -trace, etc.)
+#    - scanner_utils: Para utils_files.c (manejo de nombres de archivo y timestamps)
+target_link_libraries(scanner_main PRIVATE 
+    scanner_module_args 
+    scanner_utils
+)
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/logs)
+
+message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args and utils")
