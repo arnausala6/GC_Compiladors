@@ -42,6 +42,10 @@ enable_testing()
 message(STATUS " - (${PROJECT_NAME}) Testing enabled")
 
 # Add source modules and main program
+add_subdirectory(preprocessor)
+message(STATUS " - (${PROJECT_NAME}) Added preprocessor/ directory")
+
+# Add source modules and main program
 add_subdirectory(src)
 message(STATUS " - (${PROJECT_NAME}) Added src/ directory")
 
@@ -52,7 +56,7 @@ message(STATUS " - (${PROJECT_NAME}) Added tests/ directory")
 # Optionally build main executable if needed 
 # This executable links together all module libraries.
 # (to have modular test for each module in parallel)
-add_executable(modules_template_main src/main.c)
-target_link_libraries(modules_template_main PRIVATE module_preprocessor module_args delete_comments utils module_replacedir guardar_directivas macrostoring macro_substitute)
-message(STATUS " - (${PROJECT_NAME}) Modules Template Main executable 'modules_template_main' linked with module_args and delete_comments and module_preprocessor")
-target_link_libraries(modules_template_main PRIVATE module_preprocessor module_args delete_comments user_manual utils module_replacedir guardar_directivas macrostoring macro_substitute)
+add_executable(preprocessor_modules_template_main preprocessor/main.c)
+target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments utils module_replacedir guardar_directivas macrostoring macro_substitute)
+message(STATUS " - (${PROJECT_NAME}) Modules Template Main executable 'preprocessor_modules_template_main' linked with module_args and delete_comments and module_preprocessor")
+target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments user_manual utils module_replacedir guardar_directivas macrostoring macro_substitute)

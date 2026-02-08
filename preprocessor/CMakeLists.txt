@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# src/CMakeLists.txt
+# preprocessor/CMakeLists.txt
 # 
 # This file includes each module directory (sub-library) so they can be
 # built individually with their own CMakeLists.txt.
@@ -16,16 +16,24 @@
 # CMakeLists.txt files respectively.
 # -----------------------------------------------------------------------------
 
-message(STATUS "(${PROJECT_NAME}) Adding all module subdirectories in src/...")
-message(STATUS " - (${PROJECT_NAME}) (src) Configuring source modules and utils...")
+message(STATUS "(${PROJECT_NAME}) Adding all module subdirectories in preprocessor/...")
+message(STATUS " - (${PROJECT_NAME}) (preprocessor) Configuring source modules and utils...")
 
 # Add utils library from the top-level src folder
-add_library(scanner_utils STATIC utils_files.c)
-target_include_directories(scanner_utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(utils STATIC utils_files.c)
+target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 message(STATUS "   - (${PROJECT_NAME}) Added utils library")
 
 # Add modules subdirectories
 add_subdirectory(module_args)
+add_subdirectory(delete_comments)
+add_subdirectory(guardar_directivas)
+add_subdirectory(macrostoring)
+add_subdirectory(module_replacedir)
+add_subdirectory(macro_substitute)
+add_subdirectory(module_preprocessor)
+add_subdirectory(user_manual)
+
 message(STATUS "   - (${PROJECT_NAME}) Added modules subdirectories")
 
 message(STATUS "(${PROJECT_NAME}) Finished including module subdirectories.")
