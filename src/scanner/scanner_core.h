@@ -2,7 +2,7 @@
 #define SCANNER_CORE_H
 
 #include <stdio.h>
-
+#define LEX_MAX 256
 /* Forward declarations (evita includes circulares) */
 struct AutomataSet;
 struct TokenList;
@@ -20,24 +20,21 @@ typedef struct {
     FILE *input;
     SrcLoc loc;
 
-    /* Buffer del lexema en construcción */
-    char lexeme_buffer[256];
+    char lexeme_buffer[LEX_MAX];
     int  lexeme_length;
 
-    /* Dependencias */
     struct AutomataSet *automata;
     struct TokenList *tokens;
     struct Diagnostics *diag;
     struct Counters *counters;
 
-    /* Lookahead sin consumir */
-    int pending_has;     /* 0/1 */
-    int pending_char;    /* valor del char pendiente */
-    SrcLoc pending_loc;  /* localización del char pendiente */
+    int pending_has;     
+    int pending_char;    
+    SrcLoc pending_loc;  
 
 } Scanner;
 
-/* Init + run */
+
 void scanner_init(
     Scanner *s,
     FILE *input,
@@ -48,7 +45,6 @@ void scanner_init(
     struct Counters *counters
 );
 
-/* Ejecuta el escaneo completo, llenando TokenList. */
 int scanner_run(Scanner *s);
 
-#endif /* SCANNER_CORE_H */
+#endif
