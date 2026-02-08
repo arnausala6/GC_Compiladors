@@ -33,7 +33,7 @@ el archivo _pp estará en la carpeta tests del modulo delete_comments
 */
 
 #include <stdio.h>
-#include "../src/module_preprocessor/preprocessor.h"
+#include "../preprocessor/module_preprocessor/preprocessor.h"
 
 int main(void) {
     FILE *in = fopen("src/delete_comments/tests/input_comments.c", "r");

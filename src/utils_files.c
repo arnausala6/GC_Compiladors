@@ -44,7 +44,7 @@ void generate_timestamped_log_filename(const char* base_name, char* output, size
              filename,
              extension);
 
-    fprintf(ofile, "Generated log filename (with time stamp): %s\n", output);
+    printf("Generated log filename (with time stamp): %s\n", output);
 
 }
 
@@ -56,7 +56,7 @@ FILE* set_output_test_file(const char* filename) {
     char timestamped_filename[MAXFILENAME];
 
     if (strcmp(filename, "stdout") != 0) {
-        fprintf(ofile, "Machine remote time ");
+        fprintf(ofile, "Machine remote time \n");
         generate_timestamped_log_filename(filename, timestamped_filename, sizeof(timestamped_filename));
 
         // Set the time zone to Europe/Madrid: 

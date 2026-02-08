@@ -27,7 +27,6 @@ int logs_activados = 1;
    IFDEF CON INCLUDE
    ================================ */
 int b =33;
-#include "..\..\tests\t4.h"
 int a = 22;
 /* ================================
    IFDEF ANIDADO
