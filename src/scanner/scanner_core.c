@@ -38,7 +38,8 @@ static int lexeme_push(Scanner *s, int ch) {
         return 0;
     }
 
-    s->lexeme_buffer[s->lexeme_length++] = (char)ch;
+    s->lexeme_buffer[s->lexeme_length] = (char)ch;
+    s->lexeme_length++;
     s->lexeme_buffer[s->lexeme_length] = '\0';
     return 1;
 }
