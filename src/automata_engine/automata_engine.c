@@ -73,14 +73,14 @@ void automata_initialize(){
 
 
     //Transitions CAT_NUMBER:
-    for(int i=0; i<sizeof(automatas[CAT_NUMBER].states); i++){
-        for(int j=0; j<sizeof(automatas[CAT_NUMBER].alphabet); j++){
+    for(int i=0; i<sizeof(automatas[CAT_NUMBER].states)/sizeof(int); i++){
+        for(int j=0; j<sizeof(automatas[CAT_NUMBER].alphabet)/sizeof(char); j++){
             automatas[CAT_NUMBER].transitions[i][automatas[CAT_NUMBER].alphabet[j]] = 1;
         }
     }
 
     //Transitions CAT_IDENTIFIER:
-    for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet)/sizeof(char); i++){
         if(automatas[CAT_IDENTIFIER].alphabet[i] == '0' || '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' || '9'){
             automatas[CAT_IDENTIFIER].transitions[automatas[CAT_IDENTIFIER].states[0]][automatas[CAT_IDENTIFIER].alphabet[i]] = automatas[CAT_IDENTIFIER].states[2];
         }
@@ -89,11 +89,11 @@ void automata_initialize(){
         }
     }
 
-    for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet)/sizeof(char); i++){
         automatas[CAT_IDENTIFIER].transitions[automatas[CAT_IDENTIFIER].states[1]][automatas[CAT_IDENTIFIER].alphabet[i]] = automatas[CAT_IDENTIFIER].states[1];
     }
 
-    for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet)/sizeof(char); i++){
         automatas[CAT_IDENTIFIER].transitions[automatas[CAT_IDENTIFIER].states[2]][automatas[CAT_IDENTIFIER].alphabet[i]] = automatas[CAT_IDENTIFIER].states[2];
     }
 
@@ -125,8 +125,8 @@ void automata_initialize(){
     automatas[CAT_KEYWORD].transitions[24]['u'] = automatas[CAT_KEYWORD].states[25];
     automatas[CAT_KEYWORD].transitions[25]['r'] = automatas[CAT_KEYWORD].states[26];
     automatas[CAT_KEYWORD].transitions[26]['n'] = automatas[CAT_KEYWORD].states[27];
-    for(int i=0; i<sizeof(automatas[CAT_KEYWORD].states); i++){
-        for(int j=0; j<sizeof(automatas[CAT_KEYWORD].alphabet); j++){
+    for(int i=0; i<sizeof(automatas[CAT_KEYWORD].states)/sizeof(int); i++){
+        for(int j=0; j<sizeof(automatas[CAT_KEYWORD].alphabet)/sizeof(char); j++){
             if(automatas[CAT_KEYWORD].transitions[i][automatas[CAT_KEYWORD].alphabet[j]] == -1){
                 automatas[CAT_KEYWORD].transitions[i][automatas[CAT_KEYWORD].alphabet[j]] = automatas[CAT_KEYWORD].states[28];
             }
@@ -134,31 +134,31 @@ void automata_initialize(){
     }
 
     //Transitions CAT_LITERAL:
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
         if(automatas[CAT_LITERAL].alphabet == '"'){
             automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[1];
         }
         automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
     }
 
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
         if(automatas[CAT_LITERAL].alphabet == '"'){
             automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[2];
         }
         automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
     }
 
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
         automatas[CAT_LITERAL].transitions[2][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
     }
 
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet); i++){
+    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
         automatas[CAT_LITERAL].transitions[3][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
     }
 
     //Transitions CAT_OPERATOR:
-    for(int i=0; i<sizeof(automatas[CAT_OPERATOR].states); i++){
-        for(int j=0; j<sizeof(automatas[CAT_OPERATOR].alphabet); j++){
+    for(int i=0; i<sizeof(automatas[CAT_OPERATOR].states)/sizeof(int); i++){
+        for(int j=0; j<sizeof(automatas[CAT_OPERATOR].alphabet)/sizeof(char); j++){
             if(i != 2){
                 automatas[CAT_OPERATOR].transitions[i][automatas[CAT_OPERATOR].alphabet[j]] = automatas[CAT_OPERATOR].states[i+1];
             }
@@ -177,8 +177,8 @@ void automata_initialize(){
     automatas[CAT_SPECIALCHAR].transitions[1][')'] = automatas[CAT_SPECIALCHAR].states[2];
     automatas[CAT_SPECIALCHAR].transitions[3]['}'] = automatas[CAT_SPECIALCHAR].states[4];
     automatas[CAT_SPECIALCHAR].transitions[5][']'] = automatas[CAT_SPECIALCHAR].states[6];
-    for(int i=0; i<sizeof(automatas[CAT_SPECIALCHAR].states); i++){
-        for(int j=0; j<sizeof(automatas[CAT_SPECIALCHAR].alphabet); j++){
+    for(int i=0; i<sizeof(automatas[CAT_SPECIALCHAR].states)/sizeof(int); i++){
+        for(int j=0; j<sizeof(automatas[CAT_SPECIALCHAR].alphabet)/sizeof(char); j++){
             if(automatas[CAT_SPECIALCHAR].transitions[i][automatas[CAT_SPECIALCHAR].alphabet[j]] == -1){
                 automatas[CAT_SPECIALCHAR].transitions[i][automatas[CAT_SPECIALCHAR].alphabet[j]] = automatas[CAT_SPECIALCHAR].states[9];
             }
@@ -186,9 +186,65 @@ void automata_initialize(){
     }
 }
 
-void automata_reset(){
-    for(int i=0; i<sizeof(automatas); i++){
+DfaState automata_reset(){
+    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
         automatas[i].current_state = 0;
     }
 }
 
+TokenCategory automata_category_for(){
+    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+        for(int j=0; i<sizeof(automatas[i].accept_states)/sizeof(int); j++){
+            if(automatas[i].current_state == automatas[i].accept_states[j]){
+                switch (i)
+                {
+                case CAT_NUMBER:
+                    return CAT_NUMBER;
+                    break;
+                case CAT_IDENTIFIER:
+                    return CAT_IDENTIFIER;
+                    break;
+                case CAT_KEYWORD:
+                    return CAT_KEYWORD;
+                    break;
+                case CAT_LITERAL:
+                    return CAT_LITERAL;
+                    break;
+                case CAT_OPERATOR:
+                    return CAT_OPERATOR;
+                    break;
+                case CAT_SPECIALCHAR:
+                    return CAT_NUMBER;
+                    break;
+                
+                default:
+                    return CAT_NONRECOGNIZED;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+DfaState automata_step(char ch){
+    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+        if(automatas[i].transitions[automatas[i].current_state][ch] != -1){
+            automatas[i].current_state = automatas[i].transitions[automatas[i].current_state][ch];
+            return DFA_RUNNING;
+        }
+    }
+    return DFA_FAIL;
+}
+
+bool automata_is_accepting(){
+    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+        for(int j=0; i<sizeof(automatas[i].accept_states)/sizeof(int); j++){
+            if(automatas[i].current_state == automatas[i].accept_states[j]){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+    }
+}

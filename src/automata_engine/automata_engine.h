@@ -1,5 +1,6 @@
 #define NUM_SYMBOLS 128
 #define STATES 100
+#include <stdbool.h>
 
 extern DFA automatas[6];
 
@@ -22,6 +23,13 @@ typedef enum {
   CAT_NONRECOGNIZED
 } TokenCategory;
 
-void automata_initialize();
-void automata_reset();
+typedef enum{
+  DFA_RUNNING = 1,
+  DFA_FAIL = -1
+} DfaState;
 
+void automata_initialize();
+DfaState automata_reset();
+TokenCategory automata_category_for();
+DfaState automata_step(char ch);
+bool automata_is_accepting();
