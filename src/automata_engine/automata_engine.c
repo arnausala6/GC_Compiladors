@@ -1,6 +1,6 @@
 #include "automata_engine.h"
 
-void automata_initialize(){
+void automata_engine_reset(){
     DFA automatas[6] = {
     //CAT_NUMBER
     {
@@ -186,7 +186,7 @@ void automata_initialize(){
     }
 }
 
-DfaState automata_reset(){
+void automata_reset(){
     for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
         automatas[i].current_state = 0;
     }
@@ -226,14 +226,18 @@ TokenCategory automata_category_for(){
     }
 }
 
-DfaState automata_step(char ch){
+void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting){
     for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
         if(automatas[i].transitions[automatas[i].current_state][ch] != -1){
             automatas[i].current_state = automatas[i].transitions[automatas[i].current_state][ch];
-            return DFA_RUNNING;
+            *any_alive = 1;
+        }
+
+        *any_accepting = automata_is_accepting();
+        if(*any_accepting){
+            *best_accepting = automata_category_for();
         }
     }
-    return DFA_FAIL;
 }
 
 bool automata_is_accepting(){

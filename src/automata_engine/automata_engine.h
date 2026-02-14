@@ -23,13 +23,8 @@ typedef enum {
   CAT_NONRECOGNIZED
 } TokenCategory;
 
-typedef enum{
-  DFA_RUNNING = 1,
-  DFA_FAIL = -1
-} DfaState;
-
-void automata_initialize();
-DfaState automata_reset();
+void automata_engine_reset();
+void automata_reset();
 TokenCategory automata_category_for();
-DfaState automata_step(char ch);
+void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting);
 bool automata_is_accepting();
