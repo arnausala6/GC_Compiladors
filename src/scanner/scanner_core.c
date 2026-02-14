@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define LEXEME_MAX 256
+#include "../automata_engine/automata_engine.h"
 
 static void advance_loc(SrcLoc *loc, int ch) {
     if (ch == '\n') {
@@ -38,7 +39,8 @@ static int lexeme_push(Scanner *s, int ch) {
         return 0;
     }
 
-    s->lexeme_buffer[s->lexeme_length++] = (char)ch;
+    s->lexeme_buffer[s->lexeme_length] = (char)ch;
+    s->lexeme_length++;
     s->lexeme_buffer[s->lexeme_length] = '\0';
     return 1;
 }
@@ -103,29 +105,23 @@ static int scan_next_token(Scanner *s) {
         break;
     }
 
-    /* 2) Inicializar DFA */
-
-    /*
-    DfaState state = automata_reset(s->automata); módulo de autómatas se encarga de esto
-    */
+    /* 2) Inicializar el motor de autómatas (todos los DFAs en paralelo) */
+    automata_engine_reset();
 
     SrcLoc token_start;
     int started = 0;
 
     int last_accept_len = -1;
-    int last_accept_state = -1;
+    TokenCategory last_accept_category = CAT_NONRECOGNIZED;
 
-    /* 3) Leer caracteres guiados por el DFA */
+    /* 3) Leer caracteres y preguntar al motor si quedan DFAs vivos */
     while (1) {
         SrcLoc ch_loc;
         int ch = read_char(s, &ch_loc);
 
         if (ch == EOF) {
             if (last_accept_len >= 0) {
-                /*
-                TokenCategory cat = automata_category_for(s->automata, last_accept_state); se encarga el módulo de autómatas
-                */
-                emit_token(s, token_start, /*cat*/ 0, last_accept_len);
+                emit_token(s, token_start, (int)last_accept_category, last_accept_len);
                 return 1;
             }
             return 0;
@@ -136,51 +132,34 @@ static int scan_next_token(Scanner *s) {
             started = 1;
         }
 
-        /* Paso de DFA */
-        /*
-        DfaState next = automata_step(s->automata, state, ch); módulo de autómatas se encarga de esto
-        */
+        int any_alive = 0;
+        int any_accepting = 0;
+        TokenCategory best_accepting = CAT_NONRECOGNIZED;
 
-        /* if (next == DFA_FAIL) */
-        if (0) { /* ← condición real la pone el módulo de autómatas */
-            set_pending(s, ch, ch_loc);
+        automata_engine_step(ch, &any_alive, &any_accepting, &best_accepting);
 
-            if (last_accept_len >= 0) {
-                /*
-                TokenCategory cat = automata_category_for(s->automata, last_accept_state); se encarga el módulo de autómatas
-                */
-                emit_token(s, token_start, /*cat*/ 0, last_accept_len);
-                return 1;
-            }
-
-            /* No hubo ningún estado final: token no reconocido */
-            lexeme_clear(s);
+        if (any_alive) {
+            // Al menos un DFA sigue vivo, agregar char al lexema y continuar.
             lexeme_push(s, ch);
 
-            /*
-            diagnostics_add_error(
-                s->diag,
-                ERR_NONRECOGNIZED,
-                PHASE_SCANNER,
-                ch_loc,
-                "non-recognized lexeme"
-            );
-            */
-
-            emit_token(s, ch_loc, /*CAT_NONRECOGNIZED*/ 0, s->lexeme_length);
-            return 1;
+            if (any_accepting) {
+                last_accept_len = s->lexeme_length;
+                last_accept_category = best_accepting;
+            }
+        } else {
+            // No quedan DFAs vivos después de leer este char.
+            if (last_accept_len >= 0) {
+                set_pending(s, ch, ch_loc);
+                emit_token(s, token_start, (int)last_accept_category, last_accept_len);
+                return 1;
+            } else {
+                // No se reconoció ningún token, pero tampoco quedan DFAs vivos. Emitir error de caracter no reconocido.
+                lexeme_clear(s);
+                lexeme_push(s, ch);
+                emit_token(s, ch_loc, (int)CAT_NONRECOGNIZED, s->lexeme_length);
+                return 1;
+            }
         }
-
-        /* state = next; */
-        lexeme_push(s, ch);
-
-        /* Si el DFA está en estado final, lo recordamos */
-        /*
-        if (automata_is_accepting(s->automata, state)) {
-            last_accept_state = state;
-            last_accept_len = s->lexeme_length;
-        }
-        */
     }
 }
 
