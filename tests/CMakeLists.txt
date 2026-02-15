@@ -14,18 +14,20 @@ message(STATUS "(${PROJECT_NAME}) Configuring test executables for modules...")
 # add_test(NAME TestModuleArgs COMMAND test_t3 arg90 arg91 arg92)
 # message(STATUS " - (${PROJECT_NAME}) Test for module_args added")
 
-# tests/CMakeLists.txt
-
 # --- Test para t3.c ---
-# NO creamos un ejecutable con t3.c.
-# En su lugar, definimos un TEST que ejecuta 'scanner_main' usando t3.c como argumento.
-
+# Ejecuta scanner_main con t3.c como argumento.
 add_test(NAME Test_t3 
          COMMAND scanner_main -i "${CMAKE_CURRENT_SOURCE_DIR}/t3.c"
 )
 message(STATUS " - (${PROJECT_NAME}) Test t3 added (running scanner_main on t3.c)")
 
-# # Test for module_2
+# --- Test Lexer / Token model (flujo scanner -> TokenList) ---
+add_executable(test_lexer_token_model test_lexer_token_model.c)
+target_include_directories(test_lexer_token_model PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(test_lexer_token_model PRIVATE scanner counters)
+add_test(NAME TestLexerTokenModel COMMAND test_lexer_token_model)
+message(STATUS " - (${PROJECT_NAME}) Test test_lexer_token_model added (TestLexerTokenModel)")
+
 # add_executable(test_module_2 test_module_2.c)
 # target_link_libraries(test_module_2 PRIVATE module_2 utils)
 # target_include_directories(test_module_2 PRIVATE ${PROJECT_SOURCE_DIR}/src)

@@ -1,9 +1,11 @@
+#include "automata_engine.h"
 #include "scanner_core.h"
+#include "token_model.h"
+#include "diagnostics.h"
 
 #include <string.h>
 #include <stdlib.h>
 #define LEXEME_MAX 256
-#include "../automat_engine/automata_engine.h"
 
 static void advance_loc(SrcLoc *loc, int ch) {
     if (ch == '\n') {
@@ -26,16 +28,15 @@ static void lexeme_clear(Scanner *s) {
 
 static int lexeme_push(Scanner *s, int ch) {
     if (s->lexeme_length >= LEXEME_MAX - 1) {
-        /* Aquí se debería registrar error de lexema demasiado largo */
-        /* Se encarga el módulo de errores
-        diagnostics_add_error(
-            s->diag,
-            ERR_LEXEME_TOO_LONG,
-            PHASE_SCANNER,
-            s->loc,
-            "lexeme buffer overflow"
-        );
-        */
+        if (s->diag) {
+            diagnostics_add_error(
+                (Diagnostics *)s->diag,
+                ERR_LEXEME_TOO_LONG,
+                PHASE_SCANNER,
+                (const SrcLoc *)&s->loc,
+                "lexeme buffer overflow"
+            );
+        }
         return 0;
     }
 
@@ -75,17 +76,15 @@ static void emit_token(
     int token_category,   /* enum TokenCategory */
     int length            /* longitud válida del lexema */
 ) {
-    /* Aquí el Token Model debería crear y almacenar el token */
-    /*
-    tokenlist_add(     
-        s->tokens,
+    if (!s->tokens) return;
+    tokenlist_add(
+        (TokenList *)s->tokens,
         start_loc,
         s->lexeme_buffer,
         length,
-        token_category
+        (TokenCategory)token_category,
+        s->counters ? (const Counters *)s->counters : NULL
     );
-    */
-
 }
 
 static int scan_next_token(Scanner *s) {
