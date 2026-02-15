@@ -11,7 +11,6 @@ void automata_engine_reset(){
         .current_state = 0,
         .accept_states = {1},
         .alphabet = {'0','1','2','3','4','5','6','7','8','9'},
-        .transitions = {-1}
     },
 
     //CAT_IDENTIFIER
@@ -25,7 +24,6 @@ void automata_engine_reset(){
             'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
             '0','1','2','3','4','5','6','7','8','9','_'
         },
-        .transitions = {-1}
     },
 
     //CAT_KEYWORD
@@ -35,7 +33,6 @@ void automata_engine_reset(){
         .current_state = 0,
         .accept_states = {2,4,8,12,16,21,27},
         .alphabet = {'i','f','e','l','s','c','h','a','r','v','o','d','t','u','n','w'},
-        .transitions = {-1}
     },
 
     //CAT_LITERAL
@@ -49,7 +46,6 @@ void automata_engine_reset(){
             'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
             '"'
         },
-        .transitions = {-1}
     },
 
     //CAT_OPERATOR
@@ -59,7 +55,6 @@ void automata_engine_reset(){
         .current_state = 0,
         .accept_states = {1},
         .alphabet = {'=','>','+','*'},
-        .transitions = {-1}
     },
 
     //CAT_SPECIALCHAR
@@ -69,10 +64,18 @@ void automata_engine_reset(){
         .current_state = 0,
         .accept_states = {2,4,6,7,8},
         .alphabet = {'(',')','{','}','[',']',';',','},
-        .transitions = {-1}
     }
     };
     for (int i = 0; i < 6; i++) automatas[i] = init[i];
+
+    //Inicializar todas las transiciones a -1 (estado de error)
+    for(int a=0; a<sizeof(automatas)/sizeof(DFA); a++){
+        for(int i=0; i<STATES; i++){
+            for(int j=0; j<NUM_SYMBOLS; j++){
+                automatas[a].transitions[i][j] = -1;
+            }
+        }
+    }
 
     //Transitions CAT_NUMBER:
     for(int i=0; i<sizeof(automatas[CAT_NUMBER].states)/sizeof(int); i++){
@@ -82,8 +85,10 @@ void automata_engine_reset(){
     }
 
     //Transitions CAT_IDENTIFIER:
+    char c;
     for(int i=0; i<sizeof(automatas[CAT_IDENTIFIER].alphabet)/sizeof(char); i++){
-        if(automatas[CAT_IDENTIFIER].alphabet[i] == '0' || '1' || '2' || '3' || '4' || '5' || '6' || '7' || '8' || '9'){
+        c = automatas[CAT_IDENTIFIER].alphabet[i];
+        if (c >= '0' && c <= '9'){
             automatas[CAT_IDENTIFIER].transitions[automatas[CAT_IDENTIFIER].states[0]][automatas[CAT_IDENTIFIER].alphabet[i]] = automatas[CAT_IDENTIFIER].states[2];
         }
         else {
@@ -140,14 +145,18 @@ void automata_engine_reset(){
         if(automatas[CAT_LITERAL].alphabet[i] == '"'){
             automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[1];
         }
-        automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
+        else{
+            automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
+        }
     }
 
     for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
         if(automatas[CAT_LITERAL].alphabet[i] == '"'){
             automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[2];
         }
-        automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
+        else{
+            automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
+        }
     }
 
     for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
@@ -216,29 +225,30 @@ TokenCategory automata_category_for(){
                     return CAT_OPERATOR;
                     break;
                 case CAT_SPECIALCHAR:
-                    return CAT_NUMBER;
+                    return CAT_SPECIALCHAR;
                     break;
                 
                 default:
-                    return CAT_NONRECOGNIZED;
                     break;
                 }
             }
         }
     }
+    return CAT_NONRECOGNIZED;
 }
 
 void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting){
+    unsigned char uch = (unsigned char)ch; // Convertir a unsigned char para evitar problemas de índice negativo
     for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
-        if(automatas[i].transitions[automatas[i].current_state][ch] != -1){
-            automatas[i].current_state = automatas[i].transitions[automatas[i].current_state][ch];
+        if(automatas[i].transitions[automatas[i].current_state][uch] != -1){
+            automatas[i].current_state = automatas[i].transitions[automatas[i].current_state][uch];
             *any_alive = 1;
         }
+    }
 
-        *any_accepting = automata_is_accepting();
-        if(*any_accepting){
-            *best_accepting = automata_category_for();
-        }
+    *any_accepting = automata_is_accepting();
+    if(*any_accepting){
+        *best_accepting = automata_category_for();
     }
 }
 
@@ -248,9 +258,7 @@ bool automata_is_accepting(){
             if(automatas[i].current_state == automatas[i].accept_states[j]){
                 return true;
             }
-            else{
-                return false;
-            }
         }
     }
+    return false;
 }
