@@ -78,6 +78,9 @@ target_link_libraries(scanner_main PRIVATE
     automata_engine
 )
 
+# Create logs directories for all build configurations
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/logs)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug/logs)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/logs)
 
 message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args and utils")
