@@ -1,8 +1,6 @@
-#include "automata_engine.h"
 #include "scanner_core.h"
 #include "token_model.h"
 #include "diagnostics.h"
-
 #include <string.h>
 #include <stdlib.h>
 #define LEXEME_MAX 256
