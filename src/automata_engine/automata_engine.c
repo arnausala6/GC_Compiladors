@@ -4,6 +4,9 @@ DFA automatas[NUM_AUTOMATAS];
 bool alive[NUM_AUTOMATAS];
 
 void automata_engine_reset(){
+    for(int i=0; i<NUM_AUTOMATAS; i++){
+        alive[i] = true;
+    }
     static DFA init[NUM_AUTOMATAS] = {
     //CAT_NUMBER
     {
@@ -240,15 +243,14 @@ TokenCategory automata_category_for(){
 }
 
 void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting){
-    for(int i=0; i<NUM_AUTOMATAS; i++){
-        alive[i] = false;
-    }
     unsigned char uch = (unsigned char)ch; // Convertir a unsigned char para evitar problemas de índice negativo
     for(int i=0; i<NUM_AUTOMATAS; i++){
-        if(automatas[i].transitions[automatas[i].current_state][uch] != -1){
+        if(automatas[i].transitions[automatas[i].current_state][uch] != -1 && alive[i]){
             automatas[i].current_state = automatas[i].transitions[automatas[i].current_state][uch];
             *any_alive = 1;
-            alive[i] = true;
+        }
+        else{
+            alive[i] = false;
         }
     }
 

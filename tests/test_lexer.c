@@ -1,1 +1,1 @@
-int number = 1;
+int i = 1;
