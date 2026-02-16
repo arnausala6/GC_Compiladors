@@ -1,1 +1,3 @@
-int i = 1;
+while(int i==0){
+    i++;
+}
