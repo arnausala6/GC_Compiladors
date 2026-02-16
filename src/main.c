@@ -1,5 +1,8 @@
 #include "./main.h"
 #include "./module_args/module_args.h"
+#include "./scanner/scanner_core.h"
+#include "./token_model/token_model.h"
+#include "output_writer/output_writer.h"
 
 // Variable global para logs del sistema (no del scanner)
 FILE* ofile = NULL; 
@@ -77,6 +80,7 @@ int main(int argc, char *argv[]) {
     scanner_run(&s);
     for(int i=0; i < tl.size; i++) {
         output_writer_write_token(files.output_file, &tl.data[i]);
+        printf("Token %d: %s (categoria: %s)\n", i, tl.data[i].lexeme, token_category_name(tl.data[i].category)); //borrar
     }
     fprintf(ofile, "[MAIN] Scanner finalizado (Simulado).\n");
 
