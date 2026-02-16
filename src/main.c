@@ -9,6 +9,7 @@ FILE* ofile = NULL;
 
 Scanner s;
 TokenList tl;
+OutputWriter ow;
 
 /**
  * Genera el nombre de salida basado en el input reemplazando extensión.
@@ -76,11 +77,11 @@ int main(int argc, char *argv[]) {
     }
     
     tokenlist_init(&tl);
+    output_writer_init(&ow, files.output_file, config.outformat, config.debug_on);
     scanner_init(&s, files.input_file, input_filename, &tl, NULL, NULL);
     scanner_run(&s);
     for(int i=0; i < tl.size; i++) {
-        output_writer_write_token(files.output_file, &tl.data[i]);
-        printf("Token %d: %s (categoria: %s)\n", i, tl.data[i].lexeme, token_category_name(tl.data[i].category)); //borrar
+        output_writer_write_token(&ow, &tl.data[i]);
     }
     fprintf(ofile, "[MAIN] Scanner finalizado (Simulado).\n");
 
@@ -88,6 +89,7 @@ int main(int argc, char *argv[]) {
     if (files.input_file) fclose(files.input_file);
     if (files.output_file) fclose(files.output_file);
     if (files.dbgcnt_file) fclose(files.dbgcnt_file);
+    output_writer_close(&ow);
 
     return 0;
 }
