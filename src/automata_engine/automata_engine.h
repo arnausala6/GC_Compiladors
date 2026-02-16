@@ -1,6 +1,7 @@
 #define NUM_SYMBOLS 128
 #define STATES 100
 #include <stdbool.h>
+#define NUM_AUTOMATAS 6
 
 typedef struct {
   int start_state;

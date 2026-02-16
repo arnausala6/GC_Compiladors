@@ -1,9 +1,10 @@
 #include "automata_engine.h"
 
-DFA automatas[6];
+DFA automatas[NUM_AUTOMATAS];
+bool alive[NUM_AUTOMATAS];
 
 void automata_engine_reset(){
-    static DFA init[6] = {
+    static DFA init[NUM_AUTOMATAS] = {
     //CAT_NUMBER
     {
         .start_state = 0,
@@ -198,9 +199,9 @@ void automata_engine_reset(){
 }
 
 TokenCategory automata_category_for(){
-    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+    for(int i=0; i<NUM_AUTOMATAS; i++){
         for(int j=0; j<sizeof(automatas[i].accept_states)/sizeof(int); j++){
-            if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0){
+            if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0 && alive[i]){
                 if(i == CAT_IDENTIFIER){ //Caso especial: si es un identificador, revisar si es keyword
                     for(int k=0; k<sizeof(automatas[CAT_KEYWORD].accept_states)/sizeof(int); k++){
                         if(automatas[CAT_KEYWORD].current_state == automatas[CAT_KEYWORD].accept_states[k] && automatas[CAT_KEYWORD].accept_states[k] != 0){
@@ -239,11 +240,15 @@ TokenCategory automata_category_for(){
 }
 
 void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting){
+    for(int i=0; i<NUM_AUTOMATAS; i++){
+        alive[i] = false;
+    }
     unsigned char uch = (unsigned char)ch; // Convertir a unsigned char para evitar problemas de índice negativo
-    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+    for(int i=0; i<NUM_AUTOMATAS; i++){
         if(automatas[i].transitions[automatas[i].current_state][uch] != -1){
             automatas[i].current_state = automatas[i].transitions[automatas[i].current_state][uch];
             *any_alive = 1;
+            alive[i] = true;
         }
     }
 
@@ -254,9 +259,9 @@ void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCate
 }
 
 bool automata_is_accepting(){
-    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+    for(int i=0; i<NUM_AUTOMATAS; i++){
         for(int j=0; j<sizeof(automatas[i].accept_states)/sizeof(int); j++){
-            if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0){
+            if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0 && alive[i]){
                 return true;
             }
         }
