@@ -4,6 +4,9 @@
 // Variable global para logs del sistema (no del scanner)
 FILE* ofile = NULL; 
 
+Scanner s;
+TokenList tl;
+
 /**
  * Genera el nombre de salida basado en el input reemplazando extensión.
  * Ejemplo: input.c -> input.cscn
@@ -68,12 +71,13 @@ int main(int argc, char *argv[]) {
             fprintf(ofile, "[MAIN] Fichero debug count generado: %s\n", cnt_name);
         }
     }
-
-    // 4. LLAMADA AL SCANNER
-    // ---------------------------------------------------------
-    // Aquí es donde se transfiere el control a tu módulo scanner.
-    // scanner_execute(files, config); 
-    // ---------------------------------------------------------
+    
+    tokenlist_init(&tl);
+    scanner_init(&s, files.input_file, input_filename, &tl, NULL, NULL);
+    scanner_run(&s);
+    for(int i=0; i < tl.size; i++) {
+        output_writer_write_token(files.output_file, &tl.data[i]);
+    }
     fprintf(ofile, "[MAIN] Scanner finalizado (Simulado).\n");
 
     // 5. Limpieza
