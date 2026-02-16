@@ -23,7 +23,7 @@ typedef struct {
     char lexeme_buffer[LEX_MAX];
     int  lexeme_length;
 
-    struct AutomataSet *automata;
+    DFA *automata;  // Puntero a conjunto de autómatas (DFA) para el scanner
     struct TokenList *tokens;
     struct Diagnostics *diag;
     struct Counters *counters;
@@ -39,7 +39,6 @@ void scanner_init(
     Scanner *s,
     FILE *input,
     const char *filename,
-    struct AutomataSet *automata,
     struct TokenList *tokens,
     struct Diagnostics *diag,
     struct Counters *counters

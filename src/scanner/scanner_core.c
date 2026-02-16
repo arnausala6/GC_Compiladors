@@ -166,7 +166,6 @@ void scanner_init(
     Scanner *s,
     FILE *input,
     const char *filename,
-    struct AutomataSet *automata,
     struct TokenList *tokens,
     struct Diagnostics *diag,
     struct Counters *counters
@@ -178,7 +177,7 @@ void scanner_init(
     s->loc.line = 1;
     s->loc.column = 1;
 
-    s->automata = automata;
+    s->automata = automatas;
     s->tokens = tokens;
     s->diag = diag;
     s->counters = counters;
