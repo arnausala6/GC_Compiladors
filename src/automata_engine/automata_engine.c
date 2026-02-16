@@ -198,8 +198,7 @@ void automata_engine_reset(){
 }
 
 TokenCategory automata_category_for(){
-    for(int i=0; i<6; i++){
-        printf("%d ", i); //borrar
+    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
         for(int j=0; j<sizeof(automatas[i].accept_states)/sizeof(int); j++){
             if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0){
                 if(i == CAT_IDENTIFIER){ //Caso especial: si es un identificador, revisar si es keyword
