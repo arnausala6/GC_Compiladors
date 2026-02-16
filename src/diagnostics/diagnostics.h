@@ -77,4 +77,10 @@ int diagnostics_count(const Diagnostics *d);
 const Diagnostic *diagnostics_get(const Diagnostics *d, int i);
 const char *diagnostics_default_message(ErrorId id);
 
+/**
+ * Imprime un resumen de diagnósticos.
+ * Muestra el total de diagnósticos y su clasificación.
+ */
+void diagnostics_print_summary(const Diagnostics *d, FILE *out);
+
 #endif

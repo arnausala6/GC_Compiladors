@@ -92,3 +92,51 @@ const char *diagnostics_default_message(ErrorId id) {
         return "unknown error";
     return default_messages[id];
 }
+
+void diagnostics_print_summary(const Diagnostics *d, FILE *out) {
+    if (!d) return;
+    FILE *stream = out ? out : stdout;
+    
+    fprintf(stream, "\n=== RESUMEN DE DIAGNÓSTICOS ===\n");
+    fprintf(stream, "Total de errores: %d\n", d->size);
+    
+    if (d->size == 0) {
+        fprintf(stream, "No se encontraron errores.\n");
+        fprintf(stream, "================================\n\n");
+        return;
+    }
+    
+    // Contar errores por tipo
+    int count_nonrecognized = 0;
+    int count_unclosed = 0;
+    int count_invalid = 0;
+    int count_toolong = 0;
+    
+    for (int i = 0; i < d->size; i++) {
+        switch (d->data[i].id) {
+            case ERR_NONRECOGNIZED:
+                count_nonrecognized++;
+                break;
+            case ERR_UNCLOSED_LITERAL:
+                count_unclosed++;
+                break;
+            case ERR_INVALID_IDENTIFIER:
+                count_invalid++;
+                break;
+            case ERR_LEXEME_TOO_LONG:
+                count_toolong++;
+                break;
+        }
+    }
+    
+    if (count_nonrecognized > 0)
+        fprintf(stream, "  - Lexemas no reconocidos: %d\n", count_nonrecognized);
+    if (count_unclosed > 0)
+        fprintf(stream, "  - Literales sin cerrar: %d\n", count_unclosed);
+    if (count_invalid > 0)
+        fprintf(stream, "  - Identificadores inválidos: %d\n", count_invalid);
+    if (count_toolong > 0)
+        fprintf(stream, "  - Lexemas demasiado largos: %d\n", count_toolong);
+    
+    fprintf(stream, "================================\n\n");
+}

@@ -37,18 +37,12 @@ void counters_add_gen(Counters *c, long delta) {
     if (c) c->count_gen += delta;
 }
 
-void counters_report(FILE *out, int line, const char *func,
-    long inc_comp, long inc_io, long inc_gen,
-    const Counters *partial, const Counters *total)
-{
-    if (!out || (!partial && !total)) return;
-    long pc = partial ? partial->count_comp : 0;
-    long pi = partial ? partial->count_io : 0;
-    long pg = partial ? partial->count_gen : 0;
-    long tc = total ? total->count_comp : 0;
-    long ti = total ? total->count_io : 0;
-    long tg = total ? total->count_gen : 0;
-    fprintf(out, "line=%d func=%s inc_comp=%ld inc_io=%ld inc_gen=%ld partial_comp=%ld partial_io=%ld partial_gen=%ld total_comp=%ld total_io=%ld total_gen=%ld\n",
-            line, func ? func : "?", inc_comp, inc_io, inc_gen, pc, pi, pg, tc, ti, tg);
+void counters_print(const Counters *c, FILE *out) {
+    if (!c) return;
+    FILE *stream = out ? out : stdout;
+    fprintf(stream, "\n=== CONTADORES DE OPERACIONES ===\n");
+    fprintf(stream, "Comparaciones (count_comp): %ld\n", c->count_comp);
+    fprintf(stream, "Operaciones E/S (count_io): %ld\n", c->count_io);
+    fprintf(stream, "Operaciones generales (count_gen): %ld\n", c->count_gen);
+    fprintf(stream, "===================================\n\n");
 }
- 
