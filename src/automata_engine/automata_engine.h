@@ -1,9 +1,12 @@
+#ifndef AUTOMATA_ENGINE_H
+#define AUTOMATA_ENGINE_H
+
 #define NUM_SYMBOLS 128
 #define STATES 100
 #include <stdbool.h>
 #define NUM_AUTOMATAS 6
 
-typedef struct {
+typedef struct DFA {
   int start_state;
   int states[STATES];
   int current_state;
@@ -30,3 +33,5 @@ void automata_engine_reset();
 TokenCategory automata_category_for();
 void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting);
 bool automata_is_accepting();
+
+#endif 

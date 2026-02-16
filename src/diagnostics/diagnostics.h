@@ -6,19 +6,20 @@
   Fecha de creación: 10 de febrero de 2026
  
   Descripción:
-  Este archivo define los tipos y la interfaz del módulo de diagnóstico de errores
-  del compilador. Permite registrar errores con su identificador, fase del
-  compilador, localización en el código y un mensaje opcional.
- 
+  Define los tipos y la interfaz del módulo de diagnóstico de errores.
+  Los errores tienen un identificador único (ErrorId) y un step (CompilerPhase).
+  El mismo mensaje se reutiliza para el mismo error; details permite añadir
+  parámetros (localización, datos concretos). La salida se redirige según la
+  directiva de preprocesador DEBUG: OFF (0) → stdout; ON (1) → fichero de salida.
+
   Responsabilidades:
-  - Definir los enums de fase y de error (CompilerPhase, ErrorId).
-  - Definir las estructuras Diagnostic y Diagnostics.
-  - Declarar funciones para inicializar y registrar diagnósticos.
- 
+  - Definir CompilerPhase, ErrorId, Diagnostic y Diagnostics.
+  - Declarar inicialización (con elección de salida según DEBUG) y registro de errores.
+
   Notas de implementación:
-  - No usa memoria dinámica: los diagnósticos se guardan en un array fijo.
-  - El stream de salida se configura al inicializar (stdout o fichero).
-  - details puede ser NULL para usar el mensaje por defecto del error.
+  - Siempre se usa fprintf (nunca printf). El manejador de salida se fija en init.
+  - Quién llama a diagnostics_init debe pasar (stdout, fichero_salida); el módulo
+    elige uno u otro según DEBUG.
  */
 
 #ifndef DIAGNOSTICS_H
@@ -53,7 +54,7 @@ typedef struct Diagnostics {
     int size;
 } Diagnostics;
 
-void diagnostics_init(Diagnostics *d, FILE *out);
+void diagnostics_init(Diagnostics *d, FILE *when_debug_off, FILE *when_debug_on);
 
 int diagnostics_add_error(
     Diagnostics *d,
@@ -76,11 +77,5 @@ int diagnostics_add_error_at(
 int diagnostics_count(const Diagnostics *d);
 const Diagnostic *diagnostics_get(const Diagnostics *d, int i);
 const char *diagnostics_default_message(ErrorId id);
-
-/**
- * Imprime un resumen de diagnósticos.
- * Muestra el total de diagnósticos y su clasificación.
- */
-void diagnostics_print_summary(const Diagnostics *d, FILE *out);
 
 #endif

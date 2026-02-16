@@ -40,7 +40,7 @@ static Counters cnt;
  */
 static int run_scanner_on(const char *input, const char *filename) {
     tokenlist_clear(&list);
-    diagnostics_init(&diag, stderr);
+    diagnostics_init(&diag, stderr, stderr);
     counters_init(&cnt);
 
     FILE *f = tmpfile();

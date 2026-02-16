@@ -19,9 +19,10 @@
 */
 
 #include "scanner_core.h"
+#include "automata_engine.h"
 #include "token_model.h"
 #include "diagnostics.h"
-#include "../counters/counters.h"
+#include "counters.h"
 #include <string.h>
 #include <stdlib.h>
 #define LEXEME_MAX 256
@@ -79,12 +80,6 @@ static int read_char(Scanner *s, SrcLoc *char_loc) {
     if (s->counters) { counters_add_io((Counters *)s->counters, 1); }
 #endif
     if (ch == EOF) return EOF;
-
-    // Contar operación E/S (lectura de carácter)
-    if (s->counters) {
-        counters_add_io((Counters *)s->counters, 1);
-    }
-
     if (char_loc) *char_loc = s->loc;
     advance_loc(&s->loc, ch);
     return ch;
@@ -103,17 +98,6 @@ static void emit_token(
     int token_category,
     int length
 ) {
-    // Registrar error si es un token no reconocido
-    if (token_category == CAT_NONRECOGNIZED && s->diag) {
-        diagnostics_add_error(
-            (Diagnostics *)s->diag,
-            ERR_NONRECOGNIZED,
-            PHASE_SCANNER,
-            (const SrcLoc *)&start_loc,
-            "non-recognized character"
-        );
-    }
-    
     if (!s->tokens) return;
 #ifdef COUNTCONFIG
     if (s->counters) { counters_add_gen((Counters *)s->counters, 1); }
@@ -182,12 +166,9 @@ static int scan_next_token(Scanner *s) {
         int any_accepting = 0;
         TokenCategory best_accepting = CAT_NONRECOGNIZED;
         automata_engine_step(ch, &any_alive, &any_accepting, &best_accepting);
-        
-        // Contar operación general (paso de autómata)
-        if (s->counters) {
-            counters_add_gen((Counters *)s->counters, 1);
-        }
-
+#ifdef COUNTCONFIG
+        if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
         if (any_alive) {
             // Al menos un DFA sigue vivo, agregar char al lexema y continuar.
             lexeme_push(s, ch);
@@ -196,10 +177,6 @@ static int scan_next_token(Scanner *s) {
             if (s->counters) counters_add_comp((Counters *)s->counters, 1);
 #endif
             if (any_accepting) {
-                // Contar comparación (verificación de estado de aceptación)
-                if (s->counters) {
-                    counters_add_comp((Counters *)s->counters, 1);
-                }
                 last_accept_len = s->lexeme_length;
                 last_accept_category = best_accepting;
             }

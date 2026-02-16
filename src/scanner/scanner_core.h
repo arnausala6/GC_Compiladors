@@ -2,9 +2,9 @@
 #define SCANNER_CORE_H
 
 #include <stdio.h>
-#include "../automata_engine/automata_engine.h"
 #define LEX_MAX 256
-/* Forward declarations (evita includes circulares) */
+
+struct DFA;
 struct TokenList;
 struct Diagnostics;
 struct Counters;
@@ -22,7 +22,7 @@ typedef struct {
     char lexeme_buffer[LEX_MAX];
     int  lexeme_length;
 
-    DFA *automata;  // Puntero a conjunto de autómatas (DFA) para el scanner
+    struct DFA *automata;  /* puntero a conjunto de DFAs; definición en automata_engine.h */
     struct TokenList *tokens;
     struct Diagnostics *diag;
     struct Counters *counters;

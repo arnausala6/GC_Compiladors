@@ -5,8 +5,6 @@
 #include "./diagnostics/diagnostics.h"
 #include "./counters/counters.h"
 #include "output_writer/output_writer.h"
-#include "diagnostics/diagnostics.h"
-#include "counters/counters.h"
 
 FILE* ofile = NULL; 
 
@@ -81,34 +79,30 @@ int main(int argc, char *argv[]) {
     counters_init(&counters);
     tokenlist_init(&tl);
     output_writer_init(&ow, files.output_file, config.outformat, config.debug_on);
-    
-    // Inicializar diagnósticos y contadores
-    diagnostics_init(&diag, ofile);
-    counters_init(&counters);
-    
     scanner_init(&s, files.input_file, input_filename, &tl, &diag, &counters);
     scanner_run(&s);
+    
+    if (config.count_enabled && files.dbgcnt_file) {
+        counters_report(
+            files.dbgcnt_file,
+            0,
+            "scanner_run",
+            0, 0, 0,
+            &counters,
+            &counters
+        );
+    }
+
     for(int i=0; i < tl.size; i++) {
         output_writer_write_token(&ow, &tl.data[i]);
     }
     fprintf(ofile, "[MAIN] Scanner finalizado (Simulado).\n");
-    
-    // Imprimir diagnósticos y conteos si es necesario
-    diagnostics_print_summary(&diag, ofile);
-    
-    if (config.count_enabled) {
-        counters_print(&counters, ofile);
-        if (files.dbgcnt_file) {
-            counters_print(&counters, files.dbgcnt_file);
-        }
-    }
 
     // 5. Limpieza
     if (files.input_file) fclose(files.input_file);
     if (files.output_file) fclose(files.output_file);
     if (files.dbgcnt_file) fclose(files.dbgcnt_file);
     output_writer_close(&ow);
-
 
     return 0;
 }

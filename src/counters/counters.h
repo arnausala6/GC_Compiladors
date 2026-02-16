@@ -36,11 +36,9 @@ void counters_add_comp(Counters *c, long delta);
 void counters_add_io(Counters *c, long delta);
 void counters_add_gen(Counters *c, long delta);
 
-/**
- * Imprime los contadores en el stream especificado.
- * Si out es NULL, imprime en stdout.
- */
-void counters_print(const Counters *c, FILE *out);
+void counters_report(FILE *out, int line, const char *func,
+    long inc_comp, long inc_io, long inc_gen,
+    const Counters *partial, const Counters *total);
 
 #endif
  

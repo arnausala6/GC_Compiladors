@@ -1,27 +1,30 @@
 /*
   Nombre del programa: Módulo de Diagnostics (Implementación)
- 
+
   Autor(es): Iván Torres Ros
- 
+
   Fecha de creación: 10 de febrero de 2026
- 
+
   Descripción:
-  Este archivo implementa el registro y la emisión de diagnósticos de error.
-  Al registrar un error, se guarda un snapshot en la lista interna y se escribe
-  inmediatamente en el stream configurado.
- 
+  Implementa el registro de errores y su escritura en el stream elegido según
+  la directiva DEBUG (OFF → stdout, ON → fichero de salida). Usa solo fprintf.
+
   Responsabilidades:
-  - Inicializar la estructura Diagnostics.
-  - Registrar errores (crear Diagnostic, guardarlo y escribirlo en salida).
-  - Mantener mensajes por defecto reutilizables por tipo de error.
- 
+  - Inicializar Diagnostics y fijar d->out según DEBUG.
+  - Añadir errores (guardar Diagnostic y escribir en d->out).
+  - Mensajes por defecto reutilizables por ErrorId; details como parámetros opcionales.
+
   Notas de implementación:
-  - El módulo imprime en el momento de registrar el error.
-  - Si details es NULL o vacío, se usa el mensaje por defecto del ErrorId.
+  - Si DEBUG no está definido se asume 0 (salida a stdout).
+  - Si details es NULL o vacío se usa el mensaje por defecto del ErrorId.
  */
 
 #include "diagnostics.h"
 #include <stdio.h>
+
+#ifndef DEBUG
+#define DEBUG 0
+#endif
 
 static const char *const default_messages[] = {
     [ERR_NONRECOGNIZED]      = "non-recognized lexeme",
@@ -30,10 +33,14 @@ static const char *const default_messages[] = {
     [ERR_LEXEME_TOO_LONG]    = "lexeme buffer overflow"
 };
 
-void diagnostics_init(Diagnostics *d, FILE *out) {
+void diagnostics_init(Diagnostics *d, FILE *when_debug_off, FILE *when_debug_on) {
     if (!d) return;
-    d->out = out ? out : stdout;
     d->size = 0;
+#if (DEBUG == 1)
+    d->out = when_debug_on ? when_debug_on : stdout;
+#else
+    d->out = when_debug_off ? when_debug_off : stdout;
+#endif
 }
 
 static const char *message_for(ErrorId id, const char *details) {
@@ -91,52 +98,4 @@ const char *diagnostics_default_message(ErrorId id) {
     if ((unsigned)id >= sizeof(default_messages) / sizeof(default_messages[0]))
         return "unknown error";
     return default_messages[id];
-}
-
-void diagnostics_print_summary(const Diagnostics *d, FILE *out) {
-    if (!d) return;
-    FILE *stream = out ? out : stdout;
-    
-    fprintf(stream, "\n=== RESUMEN DE DIAGNÓSTICOS ===\n");
-    fprintf(stream, "Total de errores: %d\n", d->size);
-    
-    if (d->size == 0) {
-        fprintf(stream, "No se encontraron errores.\n");
-        fprintf(stream, "================================\n\n");
-        return;
-    }
-    
-    // Contar errores por tipo
-    int count_nonrecognized = 0;
-    int count_unclosed = 0;
-    int count_invalid = 0;
-    int count_toolong = 0;
-    
-    for (int i = 0; i < d->size; i++) {
-        switch (d->data[i].id) {
-            case ERR_NONRECOGNIZED:
-                count_nonrecognized++;
-                break;
-            case ERR_UNCLOSED_LITERAL:
-                count_unclosed++;
-                break;
-            case ERR_INVALID_IDENTIFIER:
-                count_invalid++;
-                break;
-            case ERR_LEXEME_TOO_LONG:
-                count_toolong++;
-                break;
-        }
-    }
-    
-    if (count_nonrecognized > 0)
-        fprintf(stream, "  - Lexemas no reconocidos: %d\n", count_nonrecognized);
-    if (count_unclosed > 0)
-        fprintf(stream, "  - Literales sin cerrar: %d\n", count_unclosed);
-    if (count_invalid > 0)
-        fprintf(stream, "  - Identificadores inválidos: %d\n", count_invalid);
-    if (count_toolong > 0)
-        fprintf(stream, "  - Lexemas demasiado largos: %d\n", count_toolong);
-    
-    fprintf(stream, "================================\n\n");
 }

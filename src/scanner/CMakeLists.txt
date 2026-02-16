@@ -6,4 +6,5 @@ target_include_directories(scanner PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/../diagnostics
 )
 target_link_libraries(scanner PUBLIC token_model diagnostics counters automata_engine)
+target_compile_definitions(scanner PRIVATE $<$<CONFIG:Debug>:COUNTCONFIG>)
 message(STATUS "(${PROJECT_NAME}) scanner configured: links token_model, diagnostics, counters, automata_engine")
