@@ -46,7 +46,7 @@ void output_writer_write_token(OutputWriter *ow, const Token *tok) {
         }
     } else {
         /* RELEASE: compacto (categorías separadas por espacio) */
-        fprintf(ow->output, "%s ", token_category_name(tok->category));
+        fprintf(ow->output, "<%s, %s> ", tok->lexeme, token_category_name(tok->category));
     }
 
     ow->last_line_written = tok->loc.line;
