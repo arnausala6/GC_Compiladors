@@ -1,14 +1,31 @@
+/*
+  Nombre del programa: Módulo de Diagnostics (Interfaz)
+ 
+  Autor(es): Iván Torres Ros
+ 
+  Fecha de creación: 10 de febrero de 2026
+ 
+  Descripción:
+  Este archivo define los tipos y la interfaz del módulo de diagnóstico de errores
+  del compilador. Permite registrar errores con su identificador, fase del
+  compilador, localización en el código y un mensaje opcional.
+ 
+  Responsabilidades:
+  - Definir los enums de fase y de error (CompilerPhase, ErrorId).
+  - Definir las estructuras Diagnostic y Diagnostics.
+  - Declarar funciones para inicializar y registrar diagnósticos.
+ 
+  Notas de implementación:
+  - No usa memoria dinámica: los diagnósticos se guardan en un array fijo.
+  - El stream de salida se configura al inicializar (stdout o fichero).
+  - details puede ser NULL para usar el mensaje por defecto del error.
+ */
+
 #ifndef DIAGNOSTICS_H
 #define DIAGNOSTICS_H
 
 #include <stdio.h>
-#include "scanner_core.h"   /* SrcLoc (única definición, evita duplicado con scanner) */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* --- Según diapositivas: CompilerPhase, ErrorId, Diagnostic --- */
+#include "../scanner/scanner_core.h"
 
 typedef enum CompilerPhase {
     PHASE_SCANNER
@@ -38,7 +55,6 @@ typedef struct Diagnostics {
 
 void diagnostics_init(Diagnostics *d, FILE *out);
 
-/** Añade un error (guarda Diagnostic y escribe en d->out). loc según diapos. */
 int diagnostics_add_error(
     Diagnostics *d,
     ErrorId id,
@@ -47,7 +63,6 @@ int diagnostics_add_error(
     const char *details
 );
 
-/** Igual pasando file/line/column (para el scanner que ya tiene SrcLoc). */
 int diagnostics_add_error_at(
     Diagnostics *d,
     ErrorId id,
@@ -60,11 +75,6 @@ int diagnostics_add_error_at(
 
 int diagnostics_count(const Diagnostics *d);
 const Diagnostic *diagnostics_get(const Diagnostics *d, int i);
-
 const char *diagnostics_default_message(ErrorId id);
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* DIAGNOSTICS_H */

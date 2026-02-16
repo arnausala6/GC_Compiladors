@@ -1,3 +1,25 @@
+/*
+  Nombre del programa: Módulo de Diagnostics (Implementación)
+ 
+  Autor(es): Iván Torres Ros
+ 
+  Fecha de creación: 10 de febrero de 2026
+ 
+  Descripción:
+  Este archivo implementa el registro y la emisión de diagnósticos de error.
+  Al registrar un error, se guarda un snapshot en la lista interna y se escribe
+  inmediatamente en el stream configurado.
+ 
+  Responsabilidades:
+  - Inicializar la estructura Diagnostics.
+  - Registrar errores (crear Diagnostic, guardarlo y escribirlo en salida).
+  - Mantener mensajes por defecto reutilizables por tipo de error.
+ 
+  Notas de implementación:
+  - El módulo imprime en el momento de registrar el error.
+  - Si details es NULL o vacío, se usa el mensaje por defecto del ErrorId.
+ */
+
 #include "diagnostics.h"
 #include <stdio.h>
 

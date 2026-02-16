@@ -1,3 +1,24 @@
+/*
+  Nombre del programa: Módulo de Counters (Implementación)
+ 
+  Autor(es): Iván Torres Ros
+ 
+  Fecha de creación: 10 de febrero de 2026
+ 
+  Descripción:
+  Este archivo implementa las funciones del módulo de contadores. Incluye la
+  inicialización de contadores/configuración y las operaciones de incremento.
+ 
+  Responsabilidades:
+  - Inicializar Counters a cero.
+  - Inicializar CountConfig con valores por defecto.
+  - Incrementar los contadores (comparaciones, E/S y generales).
+ 
+  Notas de implementación:
+  - La inicialización se hace con memset para asegurar valores a cero.
+  - Las funciones add_* suman el delta indicado al contador correspondiente.
+ */
+
 #include "counters.h"
 #include <string.h>
 
