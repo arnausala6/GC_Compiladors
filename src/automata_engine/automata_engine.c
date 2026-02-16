@@ -179,7 +179,7 @@ void automata_engine_reset(){
         }
     }
 
-    //Transitions CAT_SPECIALCHAR: (falta acabarlo)
+    //Transitions CAT_SPECIALCHAR:
     automatas[CAT_SPECIALCHAR].transitions[0]['('] = automatas[CAT_SPECIALCHAR].states[1];
     automatas[CAT_SPECIALCHAR].transitions[0]['{'] = automatas[CAT_SPECIALCHAR].states[3];
     automatas[CAT_SPECIALCHAR].transitions[0]['['] = automatas[CAT_SPECIALCHAR].states[5];
@@ -197,16 +197,18 @@ void automata_engine_reset(){
     }
 }
 
-void automata_reset(){
-    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
-        automatas[i].current_state = 0;
-    }
-}
-
 TokenCategory automata_category_for(){
-    for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
+    for(int i=0; i<6; i++){
+        printf("%d ", i); //borrar
         for(int j=0; j<sizeof(automatas[i].accept_states)/sizeof(int); j++){
-            if(automatas[i].current_state == automatas[i].accept_states[j]){
+            if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0){
+                if(i == CAT_IDENTIFIER){ //Caso especial: si es un identificador, revisar si es keyword
+                    for(int k=0; k<sizeof(automatas[CAT_KEYWORD].accept_states)/sizeof(int); k++){
+                        if(automatas[CAT_KEYWORD].current_state == automatas[CAT_KEYWORD].accept_states[k] && automatas[CAT_KEYWORD].accept_states[k] != 0){
+                            i = CAT_KEYWORD;
+                        }
+                    }
+                }
                 switch (i)
                 {
                 case CAT_NUMBER:
@@ -255,7 +257,7 @@ void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCate
 bool automata_is_accepting(){
     for(int i=0; i<sizeof(automatas)/sizeof(DFA); i++){
         for(int j=0; j<sizeof(automatas[i].accept_states)/sizeof(int); j++){
-            if(automatas[i].current_state == automatas[i].accept_states[j]){
+            if(automatas[i].current_state == automatas[i].accept_states[j] && automatas[i].accept_states[j] != 0){
                 return true;
             }
         }

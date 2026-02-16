@@ -26,7 +26,6 @@ typedef enum {
 #define TOKEN_CATEGORY_FROM_AUTOMATA_ENGINE 1
 
 void automata_engine_reset();
-void automata_reset();
 TokenCategory automata_category_for();
 void automata_engine_step(char ch, int *any_alive, int *any_accepting, TokenCategory *best_accepting);
 bool automata_is_accepting();
