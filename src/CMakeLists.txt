@@ -32,6 +32,7 @@ add_subdirectory(counters)
 add_subdirectory(automata_engine)
 add_subdirectory(token_model)
 add_subdirectory(scanner)
+add_subdirectory(output_writer)
 
 message(STATUS "   - (${PROJECT_NAME}) Added modules subdirectories")
 

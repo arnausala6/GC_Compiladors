@@ -70,6 +70,12 @@ add_executable(scanner_main src/main.c)
 target_link_libraries(scanner_main PRIVATE 
     scanner_module_args 
     scanner_utils
+    scanner
+    output_writer
+    token_model
+    diagnostics
+    counters
+    automata_engine
 )
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/logs)
