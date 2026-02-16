@@ -1,4 +1,10 @@
-#define A 1
-#ifdef A
-OK
-#endif
+int main() {
+    printf("Hello from sample input");
+    int x = 10;
+    int y = 20;
+    int z = x + y;
+    int i = y-1;
+    printf("Result: %d", z);
+
+    return 0;
+}

@@ -1,3 +1,23 @@
+/*
+ * -----------------------------------------------------------------------------
+ * Programa: P2 – Lexer
+ * Archivo: token_model.h
+ * Autor: Arnau Sala
+ * Fecha: 9/02/2026
+ *
+ * Descripción:
+ *  Este archivo define la interfaz pública del modelo de tokens. Proporciona
+ *  las estructuras de datos y funciones necesarias para almacenar los tokens
+ *  reconocidos por el scanner en una lista con capacidad fija.
+ *
+ *  El modelo de tokens incluye:
+ *  - Definición de TOKENLIST_CAPACITY y TOKEN_LEXEME_MAX.
+ *  - Estructuras Token y TokenList (lista de tokens con capacidad fija).
+ *  - Funciones para inicializar/limpiar la lista y añadir tokens.
+ *  - Funciones inline de acceso: tamaño de la lista y obtención por índice.
+ *  - Conversión de categoría a string (token_category_name).
+ * -----------------------------------------------------------------------------
+ */
 #ifndef TOKEN_MODEL_H
 #define TOKEN_MODEL_H
 
