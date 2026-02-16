@@ -1,3 +1,23 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P2 – Lexer
+* Archivo: scanner_core.c
+* Autor: Yeray Espinosa
+* Fecha: 9/02/2026
+*
+ * Descripción:
+ *  Este archivo implementa el núcleo del scanner, que es responsable de leer el
+ *  archivo de entrada carácter a carácter, identificar tokens utilizando un conjunto
+ *  de autómatas (DFA) y llenar la estructura TokenList con los tokens reconocidos.
+ * 
+ * Responsabilidades:
+ *  - Mantener la localización actual (línea, columna) para cada token.
+ *  - Implementar un buffer de lexema para construir el texto de cada token.
+ *  - Gestionar un mecanismo de "char pendiente" para manejar el lookahead necesario
+ *    para la identificación de tokens.
+* -----------------------------------------------------------------------------
+*/
+
 #include "scanner_core.h"
 #include "token_model.h"
 #include "diagnostics.h"

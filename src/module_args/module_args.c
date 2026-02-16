@@ -1,23 +1,19 @@
 /*
- * -----------------------------------------------------------------------------
- * module_args.c 
- *
- * This module provides functionality to process command-line arguments.
+* -----------------------------------------------------------------------------
+* Programa: P2 – Lexer
+* Archivo: module_args.c
+* Autor: Raúl 
+* Fecha: 9/02/2026
+*
+ * Descripción:
+ *  Este archivo implementa el procesador de argumentos de línea de comandos, que es responsable 
+ *  de interpretar los argumentos pasados al programa.
  * 
- * - `print_arguments`: Prints each command-line argument with its index.
- * - `process_arguments`: Intended to handle application-specific argument logic.
- *                        Currently, it calls `print_arguments` and signals that
- *                        it's not implemented yet.
- *
- * Usage:
- *     Called from the main application or test modules to process CLI args.
- *
- * Status:
- *     Initial development — logic to handle arguments is not yet implemented.
- *
- * Author: [Your Name or Team]
- * -----------------------------------------------------------------------------
- */
+ * El procesador de argumentos incluye:
+ * - La definición de la estructura AppConfig, que almacena la configuración del programa. 
+ * - Funciones para procesar los argumentos y llenar la estructura AppConfig.
+* -----------------------------------------------------------------------------
+*/
 
 #include "./module_args.h"
 

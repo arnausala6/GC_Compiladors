@@ -1,3 +1,22 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P2 – Lexer
+* Archivo: automata_engine.c
+* Autor: Ivan Jimenez
+* Fecha: 9/02/2026
+*
+ * Descripción:
+ *  Este archivo implementa el motor del autómata, que es responsable de gestionar 
+ *  los autómatas finitos deterministas (DFA) para reconocer tokens.
+ * 
+ * El motor del autómata incluye:
+ * - La definición de estructuras para representar los DFA.
+ * - Funciones para inicializar y resetear los DFA.
+ * - Funciones para transitar entre estados de los DFA.
+* -----------------------------------------------------------------------------
+*/
+
+
 #include "automata_engine.h"
 
 DFA automatas[NUM_AUTOMATAS];

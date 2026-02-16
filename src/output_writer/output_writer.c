@@ -1,3 +1,19 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P2 – Lexer
+* Archivo: output_writer.c
+* Autor: Wassim Ibn Tahar
+* Fecha: 9/02/2026
+*
+ * Descripción:
+ *  Este archivo implementa el escritor de salida, que es responsable de escribir los tokens reconocidos por el scanner en un archivo de salida.
+ * 
+ * El escritor de salida puede operar en dos modos:
+ * - DEBUG: imprime cada token con su localización y lexema.
+ * - RELEASE: imprime los tokens en un formato compacto con categorías separadas por espacio.
+* -----------------------------------------------------------------------------
+*/
+
 #include "output_writer.h"
 #include <stdio.h>
 

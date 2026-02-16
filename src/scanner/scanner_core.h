@@ -10,7 +10,6 @@ struct TokenList;
 struct Diagnostics;
 struct Counters;
 
-/* --- Según slides --- */
 typedef struct {
     const char *file;
     int line;

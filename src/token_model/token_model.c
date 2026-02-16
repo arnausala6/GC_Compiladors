@@ -1,3 +1,19 @@
+/*
+* -----------------------------------------------------------------------------
+* Programa: P2 – Lexer
+* Archivo: token_model.c
+* Autor: Arnau Sala
+* Fecha: 9/02/2026
+*
+ * Descripción:
+ *  Este archivo implementa el modelo de tokens, que es responsable de mantener
+ *  la estructura de datos para almacenar los tokens reconocidos por el scanner.
+ * 
+ * El modelo de tokens incluye:
+ * - La definición de la estructura TokenList, que es una lista de tokens con capacidad fija.
+ * - Funciones para inicializar, limpiar y agregar tokens a la TokenList.
+* -----------------------------------------------------------------------------
+*/
 #include "token_model.h"
 #include <string.h>
 
