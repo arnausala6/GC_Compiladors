@@ -56,7 +56,6 @@ static int run_scanner_on(const char *input, const char *filename) {
         &s,
         f,
         filename,
-        NULL,
         (struct TokenList *)&list,
         (struct Diagnostics *)&diag,
         (struct Counters *)&cnt
