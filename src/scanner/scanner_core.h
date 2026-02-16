@@ -5,7 +5,6 @@
 #include "../automata_engine/automata_engine.h"
 #define LEX_MAX 256
 /* Forward declarations (evita includes circulares) */
-struct AutomataSet;
 struct TokenList;
 struct Diagnostics;
 struct Counters;

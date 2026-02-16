@@ -2,19 +2,18 @@
 #include "./module_args/module_args.h"
 #include "./scanner/scanner_core.h"
 #include "./token_model/token_model.h"
+#include "./diagnostics/diagnostics.h"
+#include "./counters/counters.h"
 #include "output_writer/output_writer.h"
 
-// Variable global para logs del sistema (no del scanner)
 FILE* ofile = NULL; 
 
 Scanner s;
 TokenList tl;
 OutputWriter ow;
+Diagnostics diag;
+Counters counters;
 
-/**
- * Genera el nombre de salida basado en el input reemplazando extensión.
- * Ejemplo: input.c -> input.cscn
- */
 void generate_output_filename(const char* input, char* output, const char* new_ext) {
     strcpy(output, input);
     char *dot = strrchr(output, '.');
@@ -76,9 +75,11 @@ int main(int argc, char *argv[]) {
         }
     }
     
+    diagnostics_init(&diag, stdout, files.output_file);
+    counters_init(&counters);
     tokenlist_init(&tl);
     output_writer_init(&ow, files.output_file, config.outformat, config.debug_on);
-    scanner_init(&s, files.input_file, input_filename, &tl, NULL, NULL);
+    scanner_init(&s, files.input_file, input_filename, &tl, &diag, &counters);
     scanner_run(&s);
     for(int i=0; i < tl.size; i++) {
         output_writer_write_token(&ow, &tl.data[i]);

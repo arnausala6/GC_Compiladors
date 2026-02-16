@@ -21,6 +21,7 @@
 #include "scanner_core.h"
 #include "token_model.h"
 #include "diagnostics.h"
+#include "counters.h"
 #include <string.h>
 #include <stdlib.h>
 #define LEXEME_MAX 256
@@ -47,17 +48,18 @@ static void lexeme_clear(Scanner *s) {
 static int lexeme_push(Scanner *s, int ch) {
     if (s->lexeme_length >= LEXEME_MAX - 1) {
         if (s->diag) {
-            diagnostics_add_error(
+            diagnostics_add_error_at(
                 (Diagnostics *)s->diag,
                 ERR_LEXEME_TOO_LONG,
                 PHASE_SCANNER,
-                (const SrcLoc *)&s->loc,
-                "lexeme buffer overflow"
+                s->loc.file,
+                s->loc.line,
+                s->loc.column,
+                NULL
             );
         }
         return 0;
     }
-
     s->lexeme_buffer[s->lexeme_length] = (char)ch;
     s->lexeme_length++;
     s->lexeme_buffer[s->lexeme_length] = '\0';
@@ -72,10 +74,11 @@ static int read_char(Scanner *s, SrcLoc *char_loc) {
         if (char_loc) *char_loc = s->pending_loc;
         return s->pending_char;
     }
-
     int ch = fgetc(s->input);
+#ifdef COUNTCONFIG
+    if (s->counters) { counters_add_io((Counters *)s->counters, 1); }
+#endif
     if (ch == EOF) return EOF;
-
     if (char_loc) *char_loc = s->loc;
     advance_loc(&s->loc, ch);
     return ch;
@@ -91,10 +94,13 @@ static void set_pending(Scanner *s, int ch, SrcLoc loc) {
 static void emit_token(
     Scanner *s,
     SrcLoc start_loc,
-    int token_category,   /* enum TokenCategory */
-    int length            /* longitud válida del lexema */
+    int token_category,
+    int length
 ) {
     if (!s->tokens) return;
+#ifdef COUNTCONFIG
+    if (s->counters) { counters_add_gen((Counters *)s->counters, 1); }
+#endif
     tokenlist_add(
         (TokenList *)s->tokens,
         start_loc,
@@ -112,12 +118,14 @@ static int scan_next_token(Scanner *s) {
     while (1) {
         SrcLoc loc0;
         int ch = read_char(s, &loc0);
+#ifdef COUNTCONFIG
+        if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
         if (ch == EOF) return 0;
-
-        if (is_delimiter(ch)) {
-            continue;
-        }
-
+#ifdef COUNTCONFIG
+        if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
+        if (is_delimiter(ch)) continue;
         set_pending(s, ch, loc0);
         break;
     }
@@ -136,43 +144,63 @@ static int scan_next_token(Scanner *s) {
         SrcLoc ch_loc;
         int ch = read_char(s, &ch_loc);
 
+#ifdef COUNTCONFIG
+        if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
         if (ch == EOF) {
+#ifdef COUNTCONFIG
+            if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
             if (last_accept_len >= 0) {
                 emit_token(s, token_start, (int)last_accept_category, last_accept_len);
                 return 1;
             }
             return 0;
         }
-
         if (!started) {
             token_start = ch_loc;
             started = 1;
         }
-
         int any_alive = 0;
         int any_accepting = 0;
         TokenCategory best_accepting = CAT_NONRECOGNIZED;
-
         automata_engine_step(ch, &any_alive, &any_accepting, &best_accepting);
-
+#ifdef COUNTCONFIG
+        if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
         if (any_alive) {
             // Al menos un DFA sigue vivo, agregar char al lexema y continuar.
             lexeme_push(s, ch);
 
+#ifdef COUNTCONFIG
+            if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
             if (any_accepting) {
                 last_accept_len = s->lexeme_length;
                 last_accept_category = best_accepting;
             }
         } else {
-            // No quedan DFAs vivos después de leer este char.
+#ifdef COUNTCONFIG
+            if (s->counters) counters_add_comp((Counters *)s->counters, 1);
+#endif
             if (last_accept_len >= 0) {
                 set_pending(s, ch, ch_loc);
                 emit_token(s, token_start, (int)last_accept_category, last_accept_len);
                 return 1;
             } else {
-                // No se reconoció ningún token, pero tampoco quedan DFAs vivos. Emitir error de caracter no reconocido.
                 lexeme_clear(s);
                 lexeme_push(s, ch);
+                if (s->diag) {
+                    diagnostics_add_error_at(
+                        (Diagnostics *)s->diag,
+                        ERR_NONRECOGNIZED,
+                        PHASE_SCANNER,
+                        ch_loc.file,
+                        ch_loc.line,
+                        ch_loc.column,
+                        NULL
+                    );
+                }
                 emit_token(s, ch_loc, (int)CAT_NONRECOGNIZED, s->lexeme_length);
                 return 1;
             }

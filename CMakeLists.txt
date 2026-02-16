@@ -31,6 +31,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 message(STATUS " - (${PROJECT_NAME}) C standard set to C11")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Specify Debug build type by default (optional)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
@@ -64,6 +66,9 @@ message(STATUS " - (${PROJECT_NAME}) Added tests/ directory")
 # 1. Definimos el ejecutable usando el main.c que está dentro de src/
 add_executable(scanner_main src/main.c)
 
+# Incluir src/ para que main.c resuelva "main.h", "module_args/...", "scanner/...", etc.
+target_include_directories(scanner_main PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
 # 2. Enlazamos las librerías necesarias:
 #    - scanner_module_args: Para procesar las flags (-i, -trace, etc.)
 #    - scanner_utils: Para utils_files.c (manejo de nombres de archivo y timestamps)
@@ -83,4 +88,4 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/logs)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug/logs)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/logs)
 
-message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args and utils")
+message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args, utils, scanner, output_writer (+ transitive)")
