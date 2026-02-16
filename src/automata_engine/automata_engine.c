@@ -55,7 +55,7 @@ void automata_engine_reset(){
     //CAT_OPERATOR
     {
         .start_state = 0,
-        .states  = {0,1,2},
+        .states  = {0,1},
         .current_state = 0,
         .accept_states = {1},
         .alphabet = {'=','>','+','*'},
@@ -64,9 +64,9 @@ void automata_engine_reset(){
     //CAT_SPECIALCHAR
     {
         .start_state = 0,
-        .states = {0,1,2,3,4,5,6,7,8,9},
+        .states = {0,1},
         .current_state = 0,
-        .accept_states = {2,4,6,7,8},
+        .accept_states = {1},
         .alphabet = {'(',')','{','}','[',']',';',','},
     }
     };
@@ -145,60 +145,31 @@ void automata_engine_reset(){
     }
 
     //Transitions CAT_LITERAL:
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
-        if(automatas[CAT_LITERAL].alphabet[i] == '"'){
-            automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[1];
-        }
-        else{
-            automatas[CAT_LITERAL].transitions[0][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
-        }
-    }
+    automatas[CAT_LITERAL].transitions[0]['"'] = automatas[CAT_LITERAL].states[1];
 
     for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
         if(automatas[CAT_LITERAL].alphabet[i] == '"'){
-            automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[2];
+            automatas[CAT_LITERAL].transitions[1]['"'] = automatas[CAT_LITERAL].states[2];
         }
         else{
-            automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
+            automatas[CAT_LITERAL].transitions[1][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[1];
         }
-    }
-
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
-        automatas[CAT_LITERAL].transitions[2][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
-    }
-
-    for(int i=0; i<sizeof(automatas[CAT_LITERAL].alphabet)/sizeof(char); i++){
-        automatas[CAT_LITERAL].transitions[3][automatas[CAT_LITERAL].alphabet[i]] = automatas[CAT_LITERAL].states[3];
     }
 
     //Transitions CAT_OPERATOR:
-    for(int i=0; i<sizeof(automatas[CAT_OPERATOR].states)/sizeof(int); i++){
-        for(int j=0; j<sizeof(automatas[CAT_OPERATOR].alphabet)/sizeof(char); j++){
-            if(i != 2){
-                automatas[CAT_OPERATOR].transitions[i][automatas[CAT_OPERATOR].alphabet[j]] = automatas[CAT_OPERATOR].states[i+1];
-            }
-            else{
-                automatas[CAT_OPERATOR].transitions[i][automatas[CAT_OPERATOR].alphabet[j]] = automatas[CAT_OPERATOR].states[i];
-            }
-        }
+    for(int i=0; i<sizeof(automatas[CAT_OPERATOR].alphabet)/sizeof(char); i++){
+        automatas[CAT_OPERATOR].transitions[0][automatas[CAT_OPERATOR].alphabet[i]] = automatas[CAT_OPERATOR].states[1];
     }
 
     //Transitions CAT_SPECIALCHAR:
     automatas[CAT_SPECIALCHAR].transitions[0]['('] = automatas[CAT_SPECIALCHAR].states[1];
-    automatas[CAT_SPECIALCHAR].transitions[0]['{'] = automatas[CAT_SPECIALCHAR].states[3];
-    automatas[CAT_SPECIALCHAR].transitions[0]['['] = automatas[CAT_SPECIALCHAR].states[5];
-    automatas[CAT_SPECIALCHAR].transitions[0][';'] = automatas[CAT_SPECIALCHAR].states[7];
-    automatas[CAT_SPECIALCHAR].transitions[0][','] = automatas[CAT_SPECIALCHAR].states[8];
-    automatas[CAT_SPECIALCHAR].transitions[1][')'] = automatas[CAT_SPECIALCHAR].states[2];
-    automatas[CAT_SPECIALCHAR].transitions[3]['}'] = automatas[CAT_SPECIALCHAR].states[4];
-    automatas[CAT_SPECIALCHAR].transitions[5][']'] = automatas[CAT_SPECIALCHAR].states[6];
-    for(int i=0; i<sizeof(automatas[CAT_SPECIALCHAR].states)/sizeof(int); i++){
-        for(int j=0; j<sizeof(automatas[CAT_SPECIALCHAR].alphabet)/sizeof(char); j++){
-            if(automatas[CAT_SPECIALCHAR].transitions[i][automatas[CAT_SPECIALCHAR].alphabet[j]] == -1){
-                automatas[CAT_SPECIALCHAR].transitions[i][automatas[CAT_SPECIALCHAR].alphabet[j]] = automatas[CAT_SPECIALCHAR].states[9];
-            }
-        }
-    }
+    automatas[CAT_SPECIALCHAR].transitions[0]['{'] = automatas[CAT_SPECIALCHAR].states[1];
+    automatas[CAT_SPECIALCHAR].transitions[0]['['] = automatas[CAT_SPECIALCHAR].states[1];
+    automatas[CAT_SPECIALCHAR].transitions[0][';'] = automatas[CAT_SPECIALCHAR].states[1];
+    automatas[CAT_SPECIALCHAR].transitions[0][','] = automatas[CAT_SPECIALCHAR].states[1];
+    automatas[CAT_SPECIALCHAR].transitions[0][')'] = automatas[CAT_SPECIALCHAR].states[1];
+    automatas[CAT_SPECIALCHAR].transitions[0]['}'] = automatas[CAT_SPECIALCHAR].states[1];
+    automatas[CAT_SPECIALCHAR].transitions[0][']'] = automatas[CAT_SPECIALCHAR].states[1];
 }
 
 TokenCategory automata_category_for(){
