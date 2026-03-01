@@ -16,24 +16,35 @@ void run_sra_engine(sra_engine *engine){
         ActionType action = get_action(&engine->automaton, top.state, lookahead.type, &lhs_symbol, &rhs_length); //Lo implementa el módulo de automata
         if(action == ACT_SHIFT){
             int next_state = get_shift_state(&engine->automaton, top.state, lookahead.type); //Lo implementa el módulo de automata
-            push_stack(&engine->stack, lookahead.type, next_state);
-            lookahead = get_next_token(&engine->token_list);
+            sra_do_shift(engine, &lookahead, next_state);
+            sra_debug_print(/*argumentos por definir*/); //lo implementa el módulo de Debug
         } else if(action == ACT_REDUCE){
-            for(int i = 0; i < rhs_length; i++){
-                pop_stack(&engine->stack); //Lo implementa el módulo de stack
-            }
-            StackItem prev_top = peek_stack(&engine->stack);
-            int goto_state = get_goto_state(&engine->automaton, prev_top.state, lhs_symbol); //Lo implementa el módulo de automata
-            push_stack(&engine->stack, lhs_symbol, goto_state);
+            sra_do_reduce(engine, lhs_symbol, rhs_length);
+            sra_debug_print(/*argumentos por definir*/); //lo implementa el módulo de Debug
         } else if(action == ACT_ACCEPT){
             fprintf(engine->dbg_out, "Análisis sintáctico completado exitosamente\n"); //cambiar esto para que se encargue módulo Debug
+            sra_debug_print(/*argumentos por definir*/); //lo implementa el módulo de Debug
             return;
         } else if(action == ACT_ERROR){
-            fprintf(engine->dbg_out, "Error: acción no válida para el símbolo en la cima de la pila\n"); //cambiar esto para que se encargue módulo Debug
+            sra_debug_print(/*argumentos por definir*/); //lo implementa el módulo de Debug
             return;
         } else {
-            fprintf(engine->dbg_out, "Error: acción desconocida\n"); //cambiar esto para que se encargue módulo Debug
+            sra_debug_print(/*argumentos por definir*/); //lo implementa el módulo de Debug
             return;
         }
     }
+}
+
+void sra_do_shift(sra_engine *engine, Token *lookahead, int next_state){
+    push_stack(&engine->stack, lookahead->type, next_state);
+    *lookahead = get_next_token(&engine->token_list);
+}
+
+void sra_do_reduce(sra_engine *engine, char *lhs_symbol, int rhs_length){
+    for(int i = 0; i < rhs_length; i++){
+        pop_stack(&engine->stack); //Lo implementa el módulo de stack
+    }
+    StackItem prev_top = peek_stack(&engine->stack);
+    int goto_state = get_goto_state(&engine->automaton, prev_top.state, lhs_symbol); //Lo implementa el módulo de automata
+    push_stack(&engine->stack, lhs_symbol, goto_state);
 }
