@@ -27,12 +27,11 @@ message(STATUS "   - (${PROJECT_NAME}) Added utils library (alias: scanner_utils
 
 # Add modules subdirectories
 add_subdirectory(module_args)
-add_subdirectory(diagnostics)
-add_subdirectory(counters)
-add_subdirectory(automata_engine)
-add_subdirectory(token_model)
-add_subdirectory(scanner)
-add_subdirectory(output_writer)
+add_subdirectory(language)
+add_subdirectory(module_debug)
+add_subdirectory(module_stack)
+add_subdirectory(modulo_automata)
+add_subdirectory(sra_engine)
 
 message(STATUS "   - (${PROJECT_NAME}) Added modules subdirectories")
 

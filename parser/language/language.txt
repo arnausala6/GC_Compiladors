@@ -1,0 +1,65 @@
+%TERMINALS
++ * ( ) NUM $
+
+%NONTERMINALS
+s e t f
+
+%PRODUCTIONS
+0: s -> e
+1: e -> e + t
+2: e -> t
+3: t -> t * f
+4: t -> f
+5: f -> ( e )
+6: f -> NUM
+
+%ACTION_TABLE
+// State    Terminal    Action      Value
+0           NUM         SHIFT       5
+0           (           SHIFT       4
+1           +           SHIFT       6
+1           $           ACCEPT      0
+2           +           REDUCE      2
+2           * SHIFT       7
+2           )           REDUCE      2
+2           $           REDUCE      2
+3           +           REDUCE      4
+3           * REDUCE      4
+3           )           REDUCE      4
+3           $           REDUCE      4
+4           NUM         SHIFT       5
+4           (           SHIFT       4
+5           +           REDUCE      6
+5           * REDUCE      6
+5           )           REDUCE      6
+5           $           REDUCE      6
+6           NUM         SHIFT       5
+6           (           SHIFT       4
+7           NUM         SHIFT       5
+7           (           SHIFT       4
+8           +           SHIFT       6
+8           )           SHIFT       11
+9           +           REDUCE      1
+9           * SHIFT       7
+9           )           REDUCE      1
+9           $           REDUCE      1
+10          +           REDUCE      3
+10          * REDUCE      3
+10          )           REDUCE      3
+10          $           REDUCE      3
+11          +           REDUCE      5
+11          * REDUCE      5
+11          )           REDUCE      5
+11          $           REDUCE      5
+
+%GOTO_TABLE
+// State    NonTerm     NextState
+0           e           1
+0           t           2
+0           f           3
+4           e           8
+4           t           2
+4           f           3
+6           t           9
+6           f           3
+7           f           10
