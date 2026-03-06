@@ -18,13 +18,18 @@ static void dbg_write_la(FILE *out,
                          const char *lexeme,
                          const char *category)
 {
+    char buffer[50]; // Buffer temporal para formatear el token
+
     if (!lexeme && !category) {
-        fprintf(out, "<->");
-        return;
+        snprintf(buffer, sizeof(buffer), "<->");
+    } else {
+        snprintf(buffer, sizeof(buffer), "<%s, %s>",
+                lexeme   ? lexeme   : "-",
+                category ? category : "-");
     }
-    fprintf(out, "<%s, %s>",
-            lexeme   ? lexeme   : "-",
-            category ? category : "-");
+
+    // Imprimimos el buffer alineado a la izquierda ocupando 20 espacios
+    fprintf(out, "%-20s", buffer);
 }
 
 static void dbg_write_stack(FILE *out, const Stack *st)
@@ -50,8 +55,9 @@ int dbg_init(Dbg *dbg, FILE *out)
     dbg->out  = out;
     dbg->step = 0;
     if (dbg->out)
+        // Ajustamos los espacios para que coincidan con los anchos definidos abajo
         fprintf(dbg->out,
-                "STEP | OP      | POS | LA | S_prev | S_new | STACK\n");
+                "STEP | OP      | POS | LA                   | S_prev | S_new | STACK\n");
     return 0;
 }
 
@@ -72,13 +78,17 @@ void dbg_print_step(Dbg *dbg,
 {
     if (!dbg || !dbg->out) return;
 
-    fprintf(dbg->out, "%d | %-7s | %d | ",
+    // STEP (4 espacios) | OP (7 espacios alineado a la izq) | POS (3 espacios) |
+    fprintf(dbg->out, "%-4d | %-7s | %-3d | ",
             dbg->step, op ? op : "-", pos);
 
+    // LA (Lookahead)
     dbg_write_la(dbg->out, la_lexeme, la_category);
 
-    fprintf(dbg->out, " | %d | %d | ", s_prev, s_new);
+    // S_prev (6 espacios) | S_new (5 espacios) |
+    fprintf(dbg->out, " | %-6d | %-5d | ", s_prev, s_new);
 
+    // STACK
     dbg_write_stack(dbg->out, st);
 
     fprintf(dbg->out, "\n");
