@@ -8,25 +8,27 @@ void init_sra_engine(SraEngine *engine, TokenList *token_list, FILE *dbg_out){
 }
 
 void run_sra_engine(Language *lang){
-    Token lookahead = get_next_token(lang->engine->token_list); //Lo implementa el módulo de token_list
+    Token lookahead = get_next_token(lang->engine.token_list); //Lo implementa el módulo de token_lis
+    Dbg dbg;
+    dbg_init(&dbg, lang->engine.dbg_out);
     while(true){
-        StackItem top = stack_peek(lang->engine->stack); //Lo implementa el módulo de stack
+        StackItem top = stack_peek(&lang->engine.stack); //Lo implementa el módulo de stack
         char *lhs_symbol;
         int rhs_length;
         ActionType action = get_action(lang, top.state, lookahead.type, &lhs_symbol, &rhs_length); 
         if(action == ACT_SHIFT){
-            int next_state = get_shift_state(&lang->engine->automaton, top.state, lookahead.type); //Lo implementa el módulo de automata
-            sra_do_shift(lang->engine, &lookahead, next_state);
-            dbg_print_step(dbg, DBG_OP_SHIFT, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, next_state, lang->engine->stack);
+            int next_state = get_shift_state(&lang->engine.automaton, top.state, lookahead.type); //Lo implementa el módulo de automata
+            sra_do_shift(&lang->engine, &lookahead, next_state);
+            dbg_print_step(&dbg, DBG_OP_SHIFT, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, next_state, &lang->engine.stack);
         } else if(action == ACT_REDUCE){
             int s_new;
-            sra_do_reduce(lang->engine, lhs_symbol, rhs_length, &s_new);
-            dbg_print_step(dbg, DBG_OP_REDUCE, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, s_new, lang->engine->stack);
+            sra_do_reduce(&lang->engine, lhs_symbol, rhs_length, &s_new);
+            dbg_print_step(&dbg, DBG_OP_REDUCE, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, s_new, &lang->engine.stack);
         } else if(action == ACT_ACCEPT){
-            dbg_print_step(dbg, DBG_OP_ACCEPT, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, DBG_STATE_NA, lang->engine->stack);
+            dbg_print_step(&dbg, DBG_OP_ACCEPT, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, DBG_STATE_NA, &lang->engine.stack);
             return;
         } else if(action == ACT_ERROR){
-            dbg_print_step(dbg, DBG_OP_ERROR, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, DBG_STATE_NA, lang->engine->stack); 
+            dbg_print_step(&dbg, DBG_OP_ERROR, token_list->pos, lookahead.lexeme, token_category_name(lookahead.category), top.state, DBG_STATE_NA, &lang->engine.stack); 
             return;
         } else {
             return;
