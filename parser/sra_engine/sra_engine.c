@@ -1,6 +1,6 @@
 #include "sra_engine.h"
 
-void init_sra_engine(sra_engine *engine, TokenList *token_list, FILE *dbg_out){
+void init_sra_engine(SraEngine *engine, TokenList *token_list, FILE *dbg_out){
     init_parser_automaton(&engine->automaton);
     stack_init(&engine->stack);
     engine->token_list = token_list;
@@ -34,12 +34,12 @@ void run_sra_engine(Language *lang){
     }
 }
 
-void sra_do_shift(sra_engine *engine, Token *lookahead, int next_state){
+void sra_do_shift(SraEngine *engine, Token *lookahead, int next_state){
     stack_push(&engine->stack, lookahead->type, next_state);
     *lookahead = get_next_token(&engine->token_list);
 }
 
-void sra_do_reduce(sra_engine *engine, char *lhs_symbol, int rhs_length, int *s_new){
+void sra_do_reduce(SraEngine *engine, char *lhs_symbol, int rhs_length, int *s_new){
     for(int i = 0; i < rhs_length; i++){
         stack_pop(&engine->stack); //Lo implementa el módulo de stack
     }
