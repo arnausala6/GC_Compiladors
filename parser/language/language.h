@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "../sra_engine/sra_engine.h"
 /* --- CONSTANTES DE DIMENSIÓN --- */
 #define MAX_LENGTH 32
 #define MAX_TERMINALS 64
@@ -65,9 +65,7 @@ typedef struct {
     int num_prods;
     
     AutomatonTables dfa_tables;
-    
-    /* Si tienes la estructura completa en sra_engine.h, descomenta esto y borra el struct opaco de arriba */
-    // SraEngine engine; 
+    SraEngine engine; 
 } Language;
 
 /* --- INTERFAZ DEL MÓDULO --- */
