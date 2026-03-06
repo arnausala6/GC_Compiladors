@@ -62,7 +62,7 @@ void run_sra_engine(Language *lang){
         }
         else if (action == ACT_REDUCE) {
             int s_new;
-            sra_do_reduce(&lang->engine, lhs_symbol, rhs_length, &s_new);
+            sra_do_reduce(lang, lhs_symbol, rhs_length, &s_new);
 
             dbg_print_step(
                 &dbg,
@@ -120,16 +120,18 @@ void sra_do_shift(SraEngine *engine, Token *lookahead, int next_state){
     }
 }
 
-void sra_do_reduce(SraEngine *engine, int lhs_symbol, int rhs_length, int *s_new){
-    int i;
+void sra_do_reduce(Language *lang, int lhs_symbol, int rhs_length, int *s_new) {
     StackItem prev_top;
+    StackItem new_item;
 
-    for (i = 0; i < rhs_length; i++) {
-        stack_pop(&engine->stack);
+    for (int i = 0; i < rhs_length; i++) {
+        stack_pop(&lang->engine.stack);
     }
 
-    prev_top = stack_peek(&engine->stack);
-    *s_new = get_goto(NULL, 0, 0);
-    (void)prev_top;
-    (void)lhs_symbol;
+    prev_top = stack_peek(&lang->engine.stack);
+    *s_new = get_goto(lang, prev_top.state, lhs_symbol);
+
+    new_item.symbol = lhs_symbol;
+    new_item.state = *s_new;
+    stack_push(&lang->engine.stack, new_item.state, new_item.symbol);
 }
