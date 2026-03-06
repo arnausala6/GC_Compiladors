@@ -13,9 +13,11 @@
 
 #include "main.h"
 #include "module_args/module_args.h"
-#include "language.h"
-#include "tokenlist.h"
-#include "sra_engine.h"
+#include "language/language.h"
+#include "modulo_tokenlist/tokenlist.h"
+#include "sra_engine/sra_engine.h"
+
+#define PROJOUTFILENAME "stdout"
 
 FILE *ofile = NULL;
 
@@ -68,7 +70,7 @@ static int build_dbg_path(const char *input, char *out, size_t max_len)
 
 int main(int argc, char **argv)
 {
-    ofile = stdout;
+    ofile = set_output_test_file(PROJOUTFILENAME);
 
     /* 1. Procesar argumentos */
     AppConfig config;
@@ -116,8 +118,8 @@ int main(int argc, char **argv)
     fprintf(ofile, "[MAIN] Fichero de traza: %s\n", dbg_path);
 
     /* 5. Inicializar y ejecutar motor SRA */
-    sra_init(&lang, &ts, dbg_out);
-    int result = sra_run(&lang);
+    init_sra_engine(&lang.engine, &ts, dbg_out);
+    int result = run_sra_engine(&lang);
 
     if (result == 0)
         fprintf(ofile, "[MAIN] Parsing finalizado: ACCEPT\n");

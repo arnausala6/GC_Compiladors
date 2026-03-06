@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# src/CMakeLists.txt
+# parser/CMakeLists.txt
 # 
 # This file includes each module directory (sub-library) so they can be
 # built individually with their own CMakeLists.txt.
@@ -16,14 +16,13 @@
 # CMakeLists.txt files respectively.
 # -----------------------------------------------------------------------------
 
-message(STATUS "(${PROJECT_NAME}) Adding all module subdirectories in src/...")
-message(STATUS " - (${PROJECT_NAME}) (src) Configuring source modules and utils...")
+message(STATUS "(${PROJECT_NAME}) Adding all module subdirectories in parser/...")
+message(STATUS " - (${PROJECT_NAME}) (parser) Configuring source modules and utils...")
 
-# Add utils library
-add_library(utils STATIC utils_files.c)
-target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-add_library(scanner_utils ALIAS utils)
-message(STATUS "   - (${PROJECT_NAME}) Added utils library (alias: scanner_utils)")
+# Add utils library (parser_utils to avoid conflict with src/utils)
+add_library(parser_utils STATIC utils_files.c)
+target_include_directories(parser_utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+message(STATUS "   - (${PROJECT_NAME}) Added parser_utils library")
 
 # Add modules subdirectories
 add_subdirectory(module_args)

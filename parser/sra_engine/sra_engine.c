@@ -1,4 +1,5 @@
 #include "sra_engine.h"
+#include "../language/language.h"
 
 static ActionType sra_get_action_info(Language *lang, int state, int lookahead_symbol, int *lhs_symbol, int *rhs_length){
     ActionEntry entry = get_action(lang, state, lookahead_symbol);

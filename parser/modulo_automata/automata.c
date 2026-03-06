@@ -1,4 +1,5 @@
 #include "automata.h"
+#include "../language/language.h"
 
 ActionEntry get_action(Language *lang, int state, int terminal_symbol)
 {

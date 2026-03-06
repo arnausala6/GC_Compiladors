@@ -13,9 +13,6 @@ Descripción: Modelo de tokens del parser.
 
 #include <stdio.h>
 
-#include "language.h"
-
-
 #define TOKEN_LEXEME_MAX 256
 #define TOKENSTREAM_INITIAL_CAPACITY 32
 

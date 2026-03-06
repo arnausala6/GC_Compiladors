@@ -51,6 +51,10 @@ message(STATUS " - (${PROJECT_NAME}) Testing enabled")
 add_subdirectory(src)
 message(STATUS " - (${PROJECT_NAME}) Added src/ directory")
 
+# Add parser modules
+add_subdirectory(parser)
+message(STATUS " - (${PROJECT_NAME}) Added parser/ directory")
+
 # Add tests (for each module or overall integration)
 add_subdirectory(tests)
 message(STATUS " - (${PROJECT_NAME}) Added tests/ directory")
@@ -89,3 +93,13 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug/logs)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/logs)
 
 message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args, utils, scanner, output_writer (+ transitive)")
+
+# --- Parser executable (P3 – Bottom-up Parsing) ---
+add_executable(parser_main parser/main.c)
+target_include_directories(parser_main PRIVATE ${CMAKE_SOURCE_DIR}/parser)
+target_link_libraries(parser_main PRIVATE
+    sra_engine
+    parser_module_args
+    parser_utils
+)
+message(STATUS " - (${PROJECT_NAME}) Parser executable 'parser_main' linked with sra_engine, parser_module_args, parser_utils (+ transitive)")

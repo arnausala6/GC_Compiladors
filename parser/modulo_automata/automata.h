@@ -1,11 +1,25 @@
 #ifndef AUTOMATA_H
 #define AUTOMATA_H
 
-#include "language.h"   // tiene Language, ActionEntry, MAX_* y dfa_tables
+/* --- Tipos de acción del autómata SRA --- */
+
+typedef enum {
+    ACT_ERROR = 0,
+    ACT_SHIFT,
+    ACT_REDUCE,
+    ACT_ACCEPT
+} ActionType;
+
+typedef struct {
+    ActionType type;
+    int value;
+} ActionEntry;
 
 typedef struct {
     int current_state;
 } ParserAutomaton;
+
+typedef struct Language Language;
 
 /* ACTION[state][terminal_symbol] */
 ActionEntry get_action(Language *lang, int state, int terminal_symbol);

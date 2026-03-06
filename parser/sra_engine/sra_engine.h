@@ -1,4 +1,6 @@
-#include <utils_files.h>
+#ifndef SRA_ENGINE_H
+#define SRA_ENGINE_H
+
 #include <stdbool.h>
 #include "../module_stack/stack.h"
 #include "../module_debug/debug.h"
@@ -11,3 +13,5 @@ typedef struct{
     TokenStream *token_list;
     FILE *dbg_out;
 } SraEngine;
+
+#endif /* SRA_ENGINE_H */

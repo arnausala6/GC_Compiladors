@@ -34,7 +34,8 @@
   "cortex-debug.gdbPath": "C:/MyPrograms/msys64/ucrt64/bin/gdb.exe",
   "files.associations": {
     "utils_files.h": "c",
-    "module_2.h": "c"
+    "module_2.h": "c",
+    "sra_engine.h": "c"
   }
 }
 

@@ -14,6 +14,7 @@
 #define MAX_STATES 128
 
 /* --- ENUMS Y STRUCTS BASE --- */
+/* ActionType y ActionEntry están definidos en automata.h (incluido vía sra_engine.h) */
 
 typedef enum {
     MODE_NONE,
@@ -23,18 +24,6 @@ typedef enum {
     MODE_ACTION,
     MODE_GOTO
 } ParseMode;
-
-typedef enum {
-    ACT_ERROR = 0,  // Por defecto, una celda vacía es un error
-    ACT_SHIFT,
-    ACT_REDUCE,
-    ACT_ACCEPT
-} ActionType;
-
-typedef struct {
-    ActionType type;
-    int value;      // Para SHIFT es el next_state, para REDUCE es el id de la producción
-} ActionEntry;
 
 typedef struct {
     int num_states;
