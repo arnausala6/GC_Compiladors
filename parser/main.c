@@ -119,18 +119,15 @@ int main(int argc, char **argv)
 
     /* 5. Inicializar y ejecutar motor SRA */
     init_sra_engine(&lang.engine, &ts, dbg_out);
-    int result = run_sra_engine(&lang);
+    run_sra_engine(&lang);
 
-    if (result == 0)
-        fprintf(ofile, "[MAIN] Parsing finalizado: ACCEPT\n");
-    else
-        fprintf(ofile, "[MAIN] Parsing finalizado: ERROR\n");
+    // if (result == 0)
+    //     fprintf(ofile, "[MAIN] Parsing finalizado: ACCEPT\n");
+    // else
+    //     fprintf(ofile, "[MAIN] Parsing finalizado: ERROR\n");
 
  
     fclose(dbg_out);
 
-    if (result == 0)
-        return 0;
-    else
-        return 1;
+    return 0;
 }

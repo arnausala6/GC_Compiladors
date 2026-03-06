@@ -48,8 +48,8 @@ message(STATUS " - (${PROJECT_NAME}) Testing enabled")
 # message(STATUS " - (${PROJECT_NAME}) Added preprocessor/ directory")
 
 # Add source modules and main program
-add_subdirectory(src)
-message(STATUS " - (${PROJECT_NAME}) Added src/ directory")
+# add_subdirectory(src)
+# message(STATUS " - (${PROJECT_NAME}) Added src/ directory")
 
 # Add parser modules
 add_subdirectory(parser)
@@ -68,31 +68,31 @@ message(STATUS " - (${PROJECT_NAME}) Added tests/ directory")
 # target_link_libraries(preprocessor_modules_template_main PRIVATE module_preprocessor module_args delete_comments user_manual utils module_replacedir guardar_directivas macrostoring macro_substitute)
 
 # 1. Definimos el ejecutable usando el main.c que está dentro de src/
-add_executable(scanner_main src/main.c)
+# add_executable(scanner_main src/main.c)
 
-# Incluir src/ para que main.c resuelva "main.h", "module_args/...", "scanner/...", etc.
-target_include_directories(scanner_main PRIVATE ${CMAKE_SOURCE_DIR}/src)
+# # Incluir src/ para que main.c resuelva "main.h", "module_args/...", "scanner/...", etc.
+# target_include_directories(scanner_main PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-# 2. Enlazamos las librerías necesarias:
-#    - scanner_module_args: Para procesar las flags (-i, -trace, etc.)
-#    - scanner_utils: Para utils_files.c (manejo de nombres de archivo y timestamps)
-target_link_libraries(scanner_main PRIVATE 
-    scanner_module_args 
-    scanner_utils
-    scanner
-    output_writer
-    token_model
-    diagnostics
-    counters
-    automata_engine
-)
+# # 2. Enlazamos las librerías necesarias:
+# #    - scanner_module_args: Para procesar las flags (-i, -trace, etc.)
+# #    - scanner_utils: Para utils_files.c (manejo de nombres de archivo y timestamps)
+# target_link_libraries(scanner_main PRIVATE 
+#     scanner_module_args 
+#     scanner_utils
+#     scanner
+#     output_writer
+#     token_model
+#     diagnostics
+#     counters
+#     automata_engine
+# )
 
-# Create logs directories for all build configurations
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/logs)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug/logs)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/logs)
+# # Create logs directories for all build configurations
+# file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/logs)
+# file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug/logs)
+# file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/logs)
 
-message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args, utils, scanner, output_writer (+ transitive)")
+# message(STATUS " - (${PROJECT_NAME}) Scanner executable 'scanner_main' linked with module_args, utils, scanner, output_writer (+ transitive)")
 
 # --- Parser executable (P3 – Bottom-up Parsing) ---
 add_executable(parser_main parser/main.c)

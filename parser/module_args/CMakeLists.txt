@@ -1,5 +1,5 @@
 # -----------------------------------------------------
-# src/module_args/CMakeLists.txt
+# parser/module_args/CMakeLists.txt
 # CMakeLists.txt for module_args
 # 
 # This file defines the module_args static library. It is compiled independently
@@ -9,14 +9,14 @@
 # -----------------------------------------------------
 
 # Create the static library from the module_args source file
-add_library(scanner_module_args module_args.c)
+add_library(parser_module_args module_args.c)
 
 # Include the current source directory for header file access
 # Since it is PRIVATE, the includes must include the path to the headers
-target_include_directories(scanner_module_args PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(parser_module_args PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link utils because module_args depends on utils
-target_link_libraries(scanner_module_args PRIVATE scanner_utils)
+target_link_libraries(parser_module_args PRIVATE parser_utils)
 
 # Print a status message during CMake configuration to confirm module_args is processed
 message(STATUS "(${PROJECT_NAME}) module_args configured: Added as static library")

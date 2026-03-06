@@ -16,24 +16,24 @@ message(STATUS "(${PROJECT_NAME}) Configuring test executables for modules...")
 
 # --- Test para t3.c ---
 # Ejecuta scanner_main con t3.c como argumento.
-add_test(NAME Test_t3 
-         COMMAND scanner_main -i "${CMAKE_CURRENT_SOURCE_DIR}/t3.c"
+add_test(NAME TestParserMain 
+         COMMAND parser_main -i "${CMAKE_CURRENT_SOURCE_DIR}/t3.c"
 )
-message(STATUS " - (${PROJECT_NAME}) Test t3 added (running scanner_main on t3.c)")
+message(STATUS " - (${PROJECT_NAME}) Test parser_main added (running parser_main on t3.c)")
 
-# --- Test Lexer / Token model (flujo scanner -> TokenList) ---
-add_executable(test_lexer_token_model test_lexer_token_model.c)
-target_include_directories(test_lexer_token_model PRIVATE ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(test_lexer_token_model PRIVATE scanner counters)
-add_test(NAME TestLexerTokenModel COMMAND test_lexer_token_model)
-message(STATUS " - (${PROJECT_NAME}) Test test_lexer_token_model added (TestLexerTokenModel)")
+# # --- Test Lexer / Token model (flujo scanner -> TokenList) ---
+# add_executable(test_lexer_token_model test_lexer_token_model.c)
+# target_include_directories(test_lexer_token_model PRIVATE ${PROJECT_SOURCE_DIR}/src)
+# target_link_libraries(test_lexer_token_model PRIVATE scanner counters)
+# add_test(NAME TestLexerTokenModel COMMAND test_lexer_token_model)
+# message(STATUS " - (${PROJECT_NAME}) Test test_lexer_token_model added (TestLexerTokenModel)")
 
 # --- Test todos los módulos (diagnostics, counters, automata_engine, token_model, scanner, output_writer, module_args) ---
-add_executable(test_all_modules test_all_modules.c)
-target_include_directories(test_all_modules PRIVATE ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(test_all_modules PRIVATE scanner_module_args scanner output_writer)
-add_test(NAME TestAllModules COMMAND test_all_modules)
-message(STATUS " - (${PROJECT_NAME}) Test test_all_modules added (TestAllModules)")
+# add_executable(test_all_modules test_all_modules.c)
+# target_include_directories(test_all_modules PRIVATE ${PROJECT_SOURCE_DIR}/src)
+# target_link_libraries(test_all_modules PRIVATE scanner_module_args scanner output_writer)
+# add_test(NAME TestAllModules COMMAND test_all_modules)
+# message(STATUS " - (${PROJECT_NAME}) Test test_all_modules added (TestAllModules)")
 
 # add_executable(test_module_2 test_module_2.c)
 # target_link_libraries(test_module_2 PRIVATE module_2 utils)

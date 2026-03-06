@@ -42,7 +42,7 @@ typedef struct {
     int rhs[MAX_RHS_LEN];     // Opcional: IDs de los símbolos de la regla (útil para AST futuro)
 } Production;
 
-typedef struct {
+typedef struct Language {
     int start_symbol;
     int num_terminals;
     int num_nonterminals;

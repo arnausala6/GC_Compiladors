@@ -21,6 +21,8 @@ typedef struct {
 
 typedef struct Language Language;
 
+void init_parser_automaton(ParserAutomaton *pa);
+
 /* ACTION[state][terminal_symbol] */
 ActionEntry get_action(Language *lang, int state, int terminal_symbol);
 

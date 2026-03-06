@@ -14,4 +14,9 @@ typedef struct{
     FILE *dbg_out;
 } SraEngine;
 
+void init_sra_engine(SraEngine *engine, TokenStream *token_list, FILE *dbg_out);
+void run_sra_engine(Language *lang);
+void sra_do_shift(SraEngine *engine, Token *lookahead, int next_state);
+void sra_do_reduce(SraEngine *engine, int lhs_symbol, int rhs_length, int *s_new);
+
 #endif /* SRA_ENGINE_H */
