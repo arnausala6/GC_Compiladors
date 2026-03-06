@@ -16,6 +16,7 @@ static ActionType sra_get_action_info(Language *lang, int state, int lookahead_s
 void init_sra_engine(SraEngine *engine, TokenStream *token_list, FILE *dbg_out){
     init_parser_automaton(&engine->automaton);
     stack_init(&engine->stack);
+    stack_push(&engine->stack, 0, -1);
     engine->token_list = token_list;
     engine->dbg_out = dbg_out;
 }
