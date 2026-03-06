@@ -19,7 +19,7 @@
 message(STATUS "(${PROJECT_NAME}) Adding all module subdirectories in src/...")
 message(STATUS " - (${PROJECT_NAME}) (src) Configuring source modules and utils...")
 
-# Add utils library from the top-level src folder
+# Add utils library
 add_library(utils STATIC utils_files.c)
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(scanner_utils ALIAS utils)
@@ -32,6 +32,7 @@ add_subdirectory(module_debug)
 add_subdirectory(module_stack)
 add_subdirectory(modulo_automata)
 add_subdirectory(sra_engine)
+add_subdirectory(modulo_tokenlist)
 
 message(STATUS "   - (${PROJECT_NAME}) Added modules subdirectories")
 

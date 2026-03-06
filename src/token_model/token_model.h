@@ -21,78 +21,52 @@
 #ifndef TOKEN_MODEL_H
 #define TOKEN_MODEL_H
 
-#include <stdbool.h>
+#include <stddef.h>
+#include "scanner_core.h" 
+#include "counters.h"       
 
-#if defined(__has_include)
-#if __has_include("../automata_engine/automata_engine.h")
-#include "../automata_engine/automata_engine.h"
-#endif
-#endif
-
-/* Ajusta si en vuestro proyecto ya existe MAX_LENGTH */
-#ifndef MAX_LENGTH
-#define MAX_LENGTH 64
-#endif
-
-/* Categorías: si automata_engine ya las define, reutilizarlas para evitar conflictos. */
+//Tipo de categoría: usar enum de automata_engine.h si está disponible; si no, fallback int.
 #ifndef TOKEN_CATEGORY_FROM_AUTOMATA_ENGINE
-typedef enum {
-    CAT_NUMBER = 0,
-    CAT_IDENTIFIER,
-    CAT_KEYWORD,
-    CAT_LITERAL,
-    CAT_OPERATOR,
-    CAT_SPECIALCHAR,
-    CAT_NONRECOGNIZED
-} TokenCategory;
-#define TOKEN_CATEGORY_FROM_AUTOMATA_ENGINE 1
+typedef int TokenCategory;
 #endif
 
-/* Compatibilidad con módulos legacy que aún leen localización del token. */
-typedef struct {
-    const char *file;
-    int line;
-    int column;
-} TokenLoc;
+#define TOKENLIST_CAPACITY 50000
+#define TOKEN_LEXEME_MAX 256
 
-/* Token para P3:
- * - lexeme: útil para debug/trace
- * - category: viene del scanner (P2)
- * - type: id del terminal del parser (columna ACTION). En slides se llama "symbol".
- */
 typedef struct {
-    char lexeme[MAX_LENGTH];
+    char lexeme[TOKEN_LEXEME_MAX];
     TokenCategory category;
-    int type; /* id del terminal (parser) */
-    TokenLoc loc;
+    SrcLoc loc;
+    Counters counters_at_emit;
+    int index;
 } Token;
 
-/* TokenList = TokenStream en vuestras slides:
- * - tokens: array dinámico
- * - size: número de tokens cargados
- * - pos: índice del lookahead
- */
 typedef struct {
-    Token *tokens;
+    Token data[TOKENLIST_CAPACITY];
     int size;
-    int pos;
 } TokenList;
 
-/* Construcción / destrucción */
 void tokenlist_init(TokenList *tl);
-void tokenlist_free(TokenList *tl);
-void tokenlist_reset(TokenList *tl);
+void tokenlist_clear(TokenList *tl);
 
-/* Cargar tokens desde .cscn (salida del scanner) */
-bool tokenlist_load(TokenList *tl, const char *path);
+int tokenlist_add(
+    TokenList *tl,
+    SrcLoc loc,
+    const char *lexeme,
+    int len,
+    TokenCategory category,
+    const Counters *counters
+);
 
-/* Lookahead (no consume) */
-const Token *tokenlist_peek(const TokenList *tl);
+static inline int tokenlist_size(const TokenList *tl) {
+    return tl ? tl->size : 0;
+}
 
-/* Consumir: firma compatible con vuestro sra_engine (TokenList **). */
-Token get_next_token(TokenList **tl);
+static inline const Token *tokenlist_get(const TokenList *tl, int i) {
+    if (!tl || i < 0 || i >= tl->size) return NULL;
+    return &tl->data[i];
+}
 
-/* Utilidad opcional */
 const char *token_category_name(TokenCategory cat);
 
-#endif /* TOKEN_MODEL_H */
+#endif // TOKEN_MODEL_H
